@@ -1,0 +1,29 @@
+{
+  "name": "cardforge-dojo",
+  "version": "0.0.1",
+  "author": "Alonso Torres (alotor)",
+  "license": "BSD-2-Clause",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "dependencies": {
+    "three": "^0.94.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "css-loader": "^1.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "postcss-each": "^0.10.0",
+    "postcss-import": "^11.1.0",
+    "postcss-loader": "^2.1.6",
+    "postcss-mixins": "^6.2.0",
+    "postcss-preset-env": "^5.2.2",
+    "source-map-loader": "^0.2.3",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.16.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  }
+}

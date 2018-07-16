@@ -1,0 +1,3 @@
+AUTHOR: Дмитрий Фомин (Dmitry Fomin)
+SOURCE: https://commons.wikimedia.org/wiki/File:Atlasnye_playing_cards_deck.svg
+LICENSE: Public Domain

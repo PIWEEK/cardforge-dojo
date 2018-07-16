@@ -1,0 +1,3 @@
+AUTHOR:	Basquetteur
+SOURCE: https://es.wikipedia.org/wiki/Archivo:Baraja_espa%C3%B1ola_completa.png
+LICENSE: https://creativecommons.org/licenses/by-sa/3.0/legalcode
