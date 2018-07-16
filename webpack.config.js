@@ -84,6 +84,12 @@ module.exports = {
           'css-loader',
           'postcss-loader'
         ],
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+          'file-loader'
+        ],
       }
     ]
   }

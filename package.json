@@ -11,11 +11,13 @@
     "three": "^0.94.0"
   },
   "devDependencies": {
+    "@types/node": "^10.5.2",
     "@types/three": "^0.92.12",
     "awesome-typescript-loader": "^5.2.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "css-loader": "^1.0.0",
+    "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "postcss-each": "^0.10.0",
     "postcss-import": "^11.1.0",
