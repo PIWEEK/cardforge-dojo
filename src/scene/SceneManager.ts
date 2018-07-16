@@ -40,7 +40,7 @@ const contextDefaults = {
   cardDimension: {
     width: 0.25,
     height: 0.375,
-    depth: 0.01,
+    depth: 0.005,
     radius: 0.025
   }
 }

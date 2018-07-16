@@ -18,6 +18,20 @@ export default class Card implements SceneObject {
     shape.quadraticCurveTo(0, 0, 0, radius);
     return shape;
   }
+
+  private loadCardTexture(row: number, column: number): THREE.Texture {
+    const texture = new THREE.TextureLoader().load(require('../assets/img/spanish_deck.png'));
+    texture.anisotropy = 4;
+
+    texture.offset.y = 0.8 - 0.2 * row;
+    texture.repeat.y = 0.53;
+
+    texture.offset.x = 0.0835 * column;
+    texture.repeat.x = 0.33;
+
+    return texture;
+  }
+
   public init(context: Context): void {
     const { width, height, depth, radius } = context.cardDimension;
     const shape = this.roundedRectShape(width, height, radius);
@@ -29,14 +43,20 @@ export default class Card implements SceneObject {
 
     const mesh = new THREE.Mesh(
       new THREE.ExtrudeGeometry(shape, extrudeSettings),
-      new THREE.MeshStandardMaterial()
+      new THREE.MeshStandardMaterial({
+        map: this.loadCardTexture(4, 1)
+      })
     );
 
     mesh.geometry.translate(-(width / 2), -(height / 2), -(depth / 2));
-    mesh.rotation.x = Math.PI / 2;
+    mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = (depth / 2);
     mesh.castShadow = true;
     mesh.receiveShadow = false;
+
+    (<any>window).card = mesh;
+
+    //mesh.position.y = 0.5;
 
     context.scene.add(mesh);
     this.obj = mesh;
