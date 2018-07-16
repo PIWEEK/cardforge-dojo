@@ -14,9 +14,11 @@ export default class SceneHelpers implements SceneObject {
     container.appendChild(stats.domElement);
     this.stats = stats;
 
-    // Axes helper
-    var axesHelper = new THREE.AxesHelper(1);
-    context.scene.add(axesHelper);
+    if (context.showHelpers) {
+      // Axes helper
+      var axesHelper = new THREE.AxesHelper(1);
+      context.scene.add(axesHelper);
+    }
   }
 
   public update(): void {

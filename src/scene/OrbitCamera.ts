@@ -17,7 +17,6 @@ export default class OrbitCamera {
     camera.position.z = 1;
     camera.position.x = 0.25;
     camera.position.y = 0.25;
-    // camera.lookAt(0, 0, 0);
     camera.up = new THREE.Vector3(0, 1, 0);
 
     this.controls = new THREE.OrbitControls(camera);
