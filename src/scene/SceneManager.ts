@@ -1,14 +1,30 @@
-import 'three';
+import * as THREE from 'three';
 import 'three/examples/js/controls/OrbitControls';
+import { Scene, Camera, Renderer } from 'three';
 
-export class SceneManager {
-  constructor(canvas) {
-    const { width, height } = canvas;
+export interface SceneObject {
+  init(context: Context): void;
+  update(): void;
+}
 
+export interface Context {
+  width: number;
+  height: number;
+  scene?: Scene;
+  mainCamera?: Camera;
+}
+
+export default class SceneManager {
+  private context: Context;
+  private sceneObjects: SceneObject[];
+  private renderer: Renderer;
+
+  constructor(canvas: HTMLCanvasElement) {
     this.context = {
       width: window.innerWidth,
       height: window.innerHeight
     };
+
     this.sceneObjects = [];
 
     this.renderer = new THREE.WebGLRenderer({
@@ -17,17 +33,12 @@ export class SceneManager {
     });
   }
 
-  add(object) {
-    this.sceneObjects.push(object);
+  public add(sceneObject: SceneObject): void {
+    this.sceneObjects.push(sceneObject);
   }
 
-  createScene() {
-    const scene = new THREE.Scene();
-    return scene;
-  }
-
-  start() {
-    this.sceneObjects.forEach((obj) => obj.init(this.context));
+  public start(): void {
+    this.sceneObjects.forEach((obj: SceneObject) => obj.init(this.context));
 
     this.update();
     this.renderer.setSize(this.context.width, this.context.height);
@@ -35,11 +46,9 @@ export class SceneManager {
     requestAnimationFrame(this.update.bind(this));
   }
 
-  update() {
+  public update(): void {
     requestAnimationFrame(this.update.bind(this));
     this.sceneObjects.forEach((obj) => obj.update());
     this.renderer.render(this.context.scene, this.context.mainCamera)
   }
 }
-
-export default SceneManager;

@@ -6,10 +6,10 @@ import OrbitCamera from './scene/OrbitCamera';
 import Ground from './scene/Ground';
 import Box from './scene/Box';
 import Lightning from './scene/Lightning';
-import Helpers from './scene/Helpers';
+import SceneHelpers from './scene/SceneHelpers';
 
 function start() {
-  const canvas = document.getElementById("main");
+  const canvas = document.getElementById("main") as HTMLCanvasElement;
 
   // Initialize scene
   const sceneManager = new SceneManager(canvas);
@@ -18,7 +18,7 @@ function start() {
   sceneManager.add(new Scene());
   sceneManager.add(new OrbitCamera());
   sceneManager.add(new Lightning());
-  sceneManager.add(new Helpers());
+  sceneManager.add(new SceneHelpers());
 
   // Objects
   sceneManager.add(new Ground());

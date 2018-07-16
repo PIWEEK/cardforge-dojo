@@ -1,8 +1,11 @@
+import { Context, SceneObject } from './SceneManager';
+import * as THREE from 'three';
 import Stats from 'three/examples/js/libs/stats.min';
 
-export default class Helpers {
+export default class SceneHelpers implements SceneObject {
+  private stats: Stats;
 
-  init(context) {
+  public init(context: Context): void {
     // Stats plugin
     const stats = new Stats();
     stats.domElement.style.position = 'absolute';
@@ -16,7 +19,7 @@ export default class Helpers {
     context.scene.add(axesHelper);
   }
 
-  update() {
+  public update(): void {
     this.stats.update();
   }
 

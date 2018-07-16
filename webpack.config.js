@@ -1,19 +1,20 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const port = 2222;
 
 module.exports = {
   mode: 'development',
 
   resolve: {
-    extensions: ['.js'],
-    modules: ['node_modules', 'src']
+    extensions: [ '.ts', '.js' ],
+    modules: [ 'node_modules', 'src' ]
   },
 
   entry: [
     'webpack-dev-server/client?http://localhost:' + port,
     'webpack/hot/only-dev-server',
-    'main.js'
+    'main.ts'
   ],
 
   output: {
@@ -21,25 +22,27 @@ module.exports = {
     filename: 'bundle.js'
   },
 
+  devtool: 'source-map',
+
   devServer: {
     hot: true,
     port: port,
-    //stats: {
-    //    colors: true,
-    //    hash: false,
-    //    version: false,
-    //    timings: false,
-    //    assets: false,
-    //    chunks: false,
-    //    modules: false,
-    //    reasons: false,
-    //    children: false,
-    //    source: false,
-    //    errors: true,
-    //    errorDetails: false,
-    //    warnings: true,
-    //    publicPath: false
-    //}
+    stats: {
+        colors: true,
+        hash: false,
+        version: false,
+        timings: false,
+        assets: false,
+        chunks: false,
+        modules: false,
+        reasons: false,
+        children: false,
+        source: false,
+        errors: true,
+        errorDetails: false,
+        warnings: true,
+        publicPath: false
+    }
   },
 
   devtool: 'eval-source-map',
@@ -54,6 +57,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       'THREE': 'three'
     }),
+    new ProgressBarPlugin()
   ],
 
   module: {
@@ -65,6 +69,13 @@ module.exports = {
           'source-map-loader'
         ],
         exclude: /node_modules/,
+      },
+      {
+        test: /\.ts$/,
+        use: [
+          'babel-loader',
+          'awesome-typescript-loader'
+        ],
       },
       {
         test: /\.css$/,
