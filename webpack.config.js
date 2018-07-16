@@ -13,7 +13,7 @@ module.exports = {
   entry: [
     'webpack-dev-server/client?http://localhost:' + port,
     'webpack/hot/only-dev-server',
-    'index.js'
+    'main.js'
   ],
 
   output: {
@@ -45,7 +45,10 @@ module.exports = {
   devtool: 'eval-source-map',
 
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'Cardforge - DOJO',
+      template: 'src/assets/index.html'
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.ProvidePlugin({

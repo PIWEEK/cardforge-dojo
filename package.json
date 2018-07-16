@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "Alonso Torres (alotor)",
   "license": "BSD-2-Clause",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "webpack-dev-server"
   },
