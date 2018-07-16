@@ -5,6 +5,7 @@ import Scene from './scene/Scene';
 import OrbitCamera from './scene/OrbitCamera';
 import Ground from './scene/Ground';
 import Box from './scene/Box';
+import Card from './scene/Card';
 import Lightning from './scene/Lightning';
 import SceneHelpers from './scene/SceneHelpers';
 
@@ -22,7 +23,8 @@ function start() {
 
   // Objects
   sceneManager.add(new Ground());
-  sceneManager.add(new Box());
+  //sceneManager.add(new Box());
+  sceneManager.add(new Card());
 
   // Start main loop
   sceneManager.start();

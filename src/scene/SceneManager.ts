@@ -14,8 +14,19 @@ export interface Context {
   mainCamera?: Camera;
 
   showHelpers: boolean;
-  shadowMapSize: { width: number, height: number };
+  shadowMapSize: {
+    width: number,
+    height: number
+  };
+
   penumbra: number;
+
+  cardDimension: {
+    width: number,
+    height: number,
+    depth: number,
+    radius: number
+  };
 }
 
 const contextDefaults = {
@@ -24,7 +35,14 @@ const contextDefaults = {
     width: 1024,
     height: 1024
   },
-  penumbra: 0.75
+  penumbra: 0.75,
+
+  cardDimension: {
+    width: 0.25,
+    height: 0.375,
+    depth: 0.01,
+    radius: 0.025
+  }
 }
 
 export default class SceneManager {
