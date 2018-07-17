@@ -5,7 +5,8 @@
   "license": "BSD-2-Clause",
   "main": "main.js",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack.config.prod.js"
   },
   "dependencies": {
     "three": "^0.94.0",
