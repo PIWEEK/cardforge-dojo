@@ -1,8 +1,10 @@
-import { Context, SceneObject } from './SceneManager';
 import * as THREE from 'three';
 import Stats from 'three/examples/js/libs/stats.min';
 
-export default class SceneHelpers implements SceneObject {
+import Context from 'scene/Context';
+import ObjectRenderer from 'scene/ObjectRenderer';
+
+export default class HelperRenderer implements ObjectRenderer {
   private stats: Stats;
 
   public init(context: Context): void {
@@ -13,12 +15,6 @@ export default class SceneHelpers implements SceneObject {
     const container = document.getElementsByTagName("body")[0];
     container.appendChild(stats.domElement);
     this.stats = stats;
-
-    if (context.showHelpers) {
-      // Axes helper
-      var axesHelper = new THREE.AxesHelper(1);
-      context.scene.add(axesHelper);
-    }
   }
 
   public update(): void {

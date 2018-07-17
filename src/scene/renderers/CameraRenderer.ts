@@ -1,7 +1,9 @@
 import * as THREE from 'three';
-import { Context, SceneObject } from './SceneManager';
 
-export default class OrbitCamera {
+import Context from 'scene/Context';
+import ObjectRenderer from 'scene/ObjectRenderer';
+
+export default class CameraRenderer implements ObjectRenderer {
 
   private controls: THREE.OrbitControls;
 

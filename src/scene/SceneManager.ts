@@ -1,33 +1,8 @@
 import * as THREE from 'three';
 import 'three/examples/js/controls/OrbitControls';
-import { Scene, Camera, WebGLRenderer } from 'three';
 
-export interface SceneObject {
-  init(context: Context): void;
-  update(): void;
-}
-
-export interface Context {
-  width: number;
-  height: number;
-  scene?: Scene;
-  mainCamera?: Camera;
-
-  showHelpers: boolean;
-  shadowMapSize: {
-    width: number,
-    height: number
-  };
-
-  penumbra: number;
-
-  cardDimension: {
-    width: number,
-    height: number,
-    depth: number,
-    radius: number
-  };
-}
+import Context from './Context';
+import ObjectRenderer from './ObjectRenderer';
 
 const contextDefaults = {
   showHelpers: false,
@@ -37,18 +12,25 @@ const contextDefaults = {
   },
   penumbra: 0.75,
 
+  spriteData: {
+    url: require('assets/img/spanish_deck.png'),
+    width: 2496,
+    height: 1595,
+    columns: 12,
+    rows: 5,
+    backface: [ 4, 1 ]
+  },
+
   cardDimension: {
-    width: 0.25,
-    height: 0.375,
-    depth: 0.005,
-    radius: 0.025
+    size: 0.25,
+    radius: 0.1
   }
 }
 
 export default class SceneManager {
   private context: Context;
-  private sceneObjects: SceneObject[];
-  private renderer: WebGLRenderer;
+  private objectRenderers: ObjectRenderer[];
+  private renderer: THREE.WebGLRenderer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.context = {
@@ -57,7 +39,7 @@ export default class SceneManager {
       ...contextDefaults
     };
 
-    this.sceneObjects = [];
+    this.objectRenderers = [];
     this.setupRenderer(canvas);
   }
 
@@ -74,15 +56,15 @@ export default class SceneManager {
     this.renderer.gammaOutput = true;
   }
 
-  public add(sceneObject: SceneObject): void {
-    this.sceneObjects.push(sceneObject);
+  public add(renderer: ObjectRenderer): void {
+    this.objectRenderers.push(renderer);
   }
 
   public start(): void {
-    this.sceneObjects.forEach((obj: SceneObject) => obj.init(this.context));
+    this.objectRenderers.forEach(
+      (renderer) => renderer.init(this.context));
 
     this.update();
-
 
     this.renderer.render(this.context.scene, this.context.mainCamera);
     requestAnimationFrame(this.update.bind(this));
@@ -90,7 +72,7 @@ export default class SceneManager {
 
   public update(): void {
     requestAnimationFrame(this.update.bind(this));
-    this.sceneObjects.forEach((obj) => obj.update());
+    this.objectRenderers.forEach((obj) => obj.update());
     this.renderer.render(this.context.scene, this.context.mainCamera)
   }
 }

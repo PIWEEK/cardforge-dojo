@@ -1,9 +1,11 @@
 import * as THREE from 'three';
-import { Context, SceneObject } from './SceneManager';
 
-export default class Ground implements SceneObject {
+import Context from 'scene/Context';
+import ObjectRenderer from 'scene/ObjectRenderer';
 
-  public obj: THREE.Object3D;
+export default class GroundRenderer implements ObjectRenderer {
+
+  public object3d: THREE.Object3D;
 
   private loadTexture1(): THREE.Texture {
     const texture = new THREE.TextureLoader().load(require('assets/textures/tatami-light.jpg'));
@@ -62,8 +64,7 @@ export default class Ground implements SceneObject {
     mesh.rotation.x = -(Math.PI / 2);
     mesh.receiveShadow = true;
 
-    this.obj = mesh;
-    context.scene.add(mesh);
+    context.scene.add(this.object3d = mesh);
   }
 
   public update(): void {
