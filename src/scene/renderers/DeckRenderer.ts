@@ -5,6 +5,7 @@ import ObjectRenderer from 'scene/ObjectRenderer';
 import SpriteInfo from 'scene/SpriteInfo';
 
 import { buildCardObject } from 'scene/builders/CardObjectBuilder';
+import { buildSelectionBox } from 'scene/builders/SelectionObjectBuilder';
 
 const DECK_DEPTH: number = 0.2;
 
@@ -40,6 +41,9 @@ export default class DeckRenderer implements ObjectRenderer {
     mesh.receiveShadow = false;
 
     context.scene.add(this.object3d = mesh);
+
+    //const glow = buildSelectionBox(width, height, depth, mesh);
+    //context.scene.add(glow);
   }
 
   public update(): void {
