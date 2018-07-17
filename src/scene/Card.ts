@@ -51,15 +51,27 @@ export default class Card implements SceneObject {
       amount: depth,
       bevelEnabled: false
     };
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geometry.translate(-(width / 2), -(height / 2), -(depth / 2));
+    geometry.computeFaceNormals();
+    geometry.faces.filter((f) => f.normal.z === 1).forEach((f) => f.materialIndex = 1);
+    geometry.faces.filter((f) => f.normal.z === -1).forEach((f) => f.materialIndex = 2);
 
     const mesh = new THREE.Mesh(
-      new THREE.ExtrudeGeometry(shape, extrudeSettings),
-      new THREE.MeshStandardMaterial({
-        map: this.loadCardTexture(2496, 1595, 12, 5, width, height, 0, 0)
-      })
+      geometry,
+      [
+        new THREE.MeshStandardMaterial({
+          color: 0xFFFFFF
+        }),
+        new THREE.MeshStandardMaterial({
+          map: this.loadCardTexture(2496, 1595, 12, 5, width, height, 0, 0)
+        }),
+        new THREE.MeshStandardMaterial({
+          map: this.loadCardTexture(2496, 1595, 12, 5, width, height, 4, 1)
+        })
+      ]
     );
 
-    mesh.geometry.translate(-(width / 2), -(height / 2), -(depth / 2));
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = (depth / 2);
     mesh.castShadow = true;
