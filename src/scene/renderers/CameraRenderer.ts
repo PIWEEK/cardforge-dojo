@@ -23,6 +23,19 @@ export default class CameraRenderer implements ObjectRenderer {
 
     this.controls = new THREE.OrbitControls(camera);
     this.controls.enableKeys = true;
+    this.controls.keys = {
+      LEFT: 65,
+      UP: 87,
+      RIGHT: 68,
+      BOTTOM: 83
+    };
+
+    this.controls.mouseButtons = {
+      ZOOM: -1, // Disble
+      ORBIT: THREE.MOUSE.RIGHT,
+      PAN: THREE.MOUSE.MIDDLE
+    };
+
     this.controls.update();
 
     context.mainCamera = camera;

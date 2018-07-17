@@ -14,7 +14,7 @@ export function buildCardGeometry(
   const shape = buildRoundedRectShape(width, height, radius);
 
   const geometry = new THREE.ExtrudeGeometry(shape, {
-    amount: depth,
+    depth,
     bevelEnabled: false
   });
 

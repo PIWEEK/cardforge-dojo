@@ -44,13 +44,15 @@ const contextDefaults: Context = {
   cardDimension: {
     size: 0.2,
     radius: 0.1
-  }
+  },
+  mouseRay:  new THREE.Raycaster()
 };
 
 export default class SceneManager {
   private context: Context;
   private objectRenderers: ObjectRenderer[];
   private renderer: THREE.WebGLRenderer;
+  private mouse: THREE.Vector2 = new THREE.Vector2();
 
   constructor(canvas: HTMLCanvasElement) {
     this.context = {
@@ -74,6 +76,11 @@ export default class SceneManager {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
+
+    canvas.onmousemove = (event) => {
+      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
   }
 
   public add(renderer: ObjectRenderer): void {
@@ -91,9 +98,11 @@ export default class SceneManager {
   }
 
   public update(): void {
-    requestAnimationFrame(this.update.bind(this));
+    this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
     this.objectRenderers.forEach((obj) => obj.update());
-    this.renderer.render(this.context.scene, this.context.mainCamera)
+    this.renderer.render(this.context.scene, this.context.mainCamera);
+
+    requestAnimationFrame(this.update.bind(this));
   }
 
   public loadCollections(collections: Collection[]): void {

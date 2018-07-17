@@ -9,14 +9,16 @@ import { buildSelectionBox } from 'scene/builders/SelectionObjectBuilder';
 
 const CARD_DEPTH: number = 0.005;
 
-
 const testCards = [[0, 0], [1, 0], [2, 0], [3, 0]];
 
 export default class CardRenderer implements ObjectRenderer {
-
+  private context: Context;
   private cardObjects: THREE.Object3D[] = [];
+  private collisionBoxes: THREE.Object3D[] = [];
 
   public init(context: Context): void {
+    this.context = context;
+
     const cardWidth = context.spriteData.width / context.spriteData.columns;
     const cardHeight = context.spriteData.height / context.spriteData.rows;
     const cardRatio = cardHeight / cardWidth;
@@ -51,17 +53,20 @@ export default class CardRenderer implements ObjectRenderer {
 
       context.scene.add(mesh);
 
-      //const glow =  buildSelectionBox(width, height, depth, mesh);
-      //context.scene.add(glow);
+      const collisionBox =  buildSelectionBox(width, height, depth, mesh);
+      collisionBox.visible = false;
+      this.collisionBoxes.push(collisionBox);
+      context.scene.add(collisionBox);
     });
 
   }
 
   public update(): void {
-    //this.object3d.position.y = 0.5;
-    //this.object3d.rotation.x += 0.01;
-    //this.object3d.rotation.y += 0.01;
-    //this.object3d.rotation.z += 0.01;
+    this.collisionBoxes.forEach((collisionBox) => {
+      const intersects = [];
+      collisionBox.raycast(this.context.mouseRay, intersects);
+      collisionBox.visible = (intersects.length > 0);
+    });
   }
 
 }

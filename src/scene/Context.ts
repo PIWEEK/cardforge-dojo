@@ -24,4 +24,6 @@ export default interface Context {
     size: number,
     radius: number
   };
+
+  mouseRay: THREE.Raycaster;
 }

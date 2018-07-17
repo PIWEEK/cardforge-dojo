@@ -1,6 +1,7 @@
+import Collection from 'data/Collection';
 import { createCollection, calculatePosition } from './utils';
 
-export default {
+const collection: Collection = {
   id: 'spanish-deck-collection',
   name: 'Spanish deck',
 
@@ -13,7 +14,7 @@ export default {
     rows: 5
   }],
 
-  backface: {
+  back: {
     sprite: 'spanish-deck',
     position: [ 4, 1 ]
   },
@@ -25,3 +26,5 @@ export default {
     ...createCollection('clubs', 'Bastos', 12, 'spanish-deck', calculatePosition(36, 10)),
   ]
 }
+
+export default collection;
