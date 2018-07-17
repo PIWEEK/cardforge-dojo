@@ -19,15 +19,26 @@ export default class Card implements SceneObject {
     return shape;
   }
 
-  private loadCardTexture(row: number, column: number): THREE.Texture {
-    const texture = new THREE.TextureLoader().load(require('../assets/img/spanish_deck.png'));
+  private loadCardTexture(
+    spriteWidth: number,
+    spriteHeight: number,
+    spriteCols: number,
+    spriteRows: number,
+    faceWidth: number,
+    faceHeight: number,
+    row: number,
+    column: number
+  ): THREE.Texture {
+    const texture = new THREE.TextureLoader().load(require('assets/img/spanish_deck.png'));
     texture.anisotropy = 4;
 
-    texture.offset.y = 0.8 - 0.2 * row;
-    texture.repeat.y = 0.53;
+    const offsetX = (1 / spriteWidth) * (spriteWidth / spriteCols)
+    texture.offset.x = offsetX * column;
+    texture.repeat.x = (1 / faceWidth) / spriteCols;
 
-    texture.offset.x = 0.0835 * column;
-    texture.repeat.x = 0.33;
+    const offsetY = (1 / spriteHeight) * (spriteHeight / spriteRows)
+    texture.offset.y = 1.0 - (offsetY * (row + 1));
+    texture.repeat.y = (1 / faceHeight) / spriteRows;
 
     return texture;
   }
@@ -44,7 +55,7 @@ export default class Card implements SceneObject {
     const mesh = new THREE.Mesh(
       new THREE.ExtrudeGeometry(shape, extrudeSettings),
       new THREE.MeshStandardMaterial({
-        map: this.loadCardTexture(4, 1)
+        map: this.loadCardTexture(2496, 1595, 12, 5, width, height, 0, 0)
       })
     );
 
@@ -56,7 +67,7 @@ export default class Card implements SceneObject {
 
     (<any>window).card = mesh;
 
-    //mesh.position.y = 0.5;
+    mesh.position.y = 0.5;
 
     context.scene.add(mesh);
     this.obj = mesh;
@@ -64,7 +75,7 @@ export default class Card implements SceneObject {
 
   public update(): void {
     //this.obj.rotation.x += 0.01;
-    //this.obj.rotation.y += 0.01;
+    this.obj.rotation.y += 0.01;
     //this.obj.rotation.z += 0.01;
   }
 

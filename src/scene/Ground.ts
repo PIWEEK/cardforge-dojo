@@ -6,7 +6,7 @@ export default class Ground implements SceneObject {
   public obj: THREE.Object3D;
 
   private loadTexture1(): THREE.Texture {
-    const texture = new THREE.TextureLoader().load(require('../assets/textures/tatami-light.jpg'));
+    const texture = new THREE.TextureLoader().load(require('assets/textures/tatami-light.jpg'));
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.anisotropy = 4;
@@ -16,7 +16,7 @@ export default class Ground implements SceneObject {
   }
 
   private loadTexture2(): THREE.Texture {
-    const texture = new THREE.TextureLoader().load(require('../assets/textures/bamboo-wicker.jpg'));
+    const texture = new THREE.TextureLoader().load(require('assets/textures/bamboo-wicker.jpg'));
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.anisotropy = 4;
@@ -26,7 +26,7 @@ export default class Ground implements SceneObject {
   }
 
   private loadTexture3(): THREE.Texture {
-    const texture = new THREE.TextureLoader().load(require('../assets/textures/gray-paper.jpg'));
+    const texture = new THREE.TextureLoader().load(require('assets/textures/gray-paper.jpg'));
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.anisotropy = 4;
@@ -36,7 +36,7 @@ export default class Ground implements SceneObject {
   }
 
   private loadTexture4(): THREE.Texture {
-    const texture = new THREE.TextureLoader().load(require('../assets/textures/rattan-wicker.jpg'));
+    const texture = new THREE.TextureLoader().load(require('assets/textures/rattan-wicker.jpg'));
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.anisotropy = 4;
