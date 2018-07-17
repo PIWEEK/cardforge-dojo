@@ -6,14 +6,11 @@ import SpriteInfo from 'scene/SpriteInfo';
 
 import { buildCardObject } from 'scene/builders/CardObjectBuilder';
 
-const CARD_DEPTH: number = 0.005;
+const DECK_DEPTH: number = 0.2;
 
+export default class DeckRenderer implements ObjectRenderer {
 
-const testCards = [[0, 0], [1, 0], [2, 0], [3, 0]];
-
-export default class CardRenderer implements ObjectRenderer {
-
-  private cardObjects: THREE.Object3D[] = [];
+  private object3d: THREE.Object3D;
 
   public init(context: Context): void {
     const cardWidth = context.spriteData.width / context.spriteData.columns;
@@ -22,35 +19,27 @@ export default class CardRenderer implements ObjectRenderer {
 
     const width = context.cardDimension.size;
     const height = width * cardRatio;
-    const depth = CARD_DEPTH * context.cardDimension.size;
+    const depth = DECK_DEPTH * context.cardDimension.size;
 
     const radius = context.cardDimension.radius * context.cardDimension.size;
 
-    let position = (-2.5 / 2.0) + width * 4;
+    const mesh = buildCardObject(
+      width, height, depth, radius,
+      context.spriteData,
+      context.frontFace,
+      context.spriteData,
+      context.backFace
+    );
 
-    testCards.forEach((faceCoord: [number, number]) => {
-      const mesh = buildCardObject(
-        width, height, depth, radius,
-        context.spriteData,
-        faceCoord,
-        context.spriteData,
-        context.backFace
-      );
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.rotation.y = Math.PI;
 
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.y = (depth / 2) + 0.02;
-      mesh.position.x = position;
+    mesh.position.x = (-2.5 / 2.0) + width * 2;
+    mesh.position.y = (depth / 2) + 0.02;
+    mesh.castShadow = true;
+    mesh.receiveShadow = false;
 
-      position += width + 0.1;
-
-      mesh.castShadow = true;
-      mesh.receiveShadow = false;
-
-      this.cardObjects.push(mesh);
-
-      context.scene.add(mesh);
-    });
-
+    context.scene.add(this.object3d = mesh);
   }
 
   public update(): void {

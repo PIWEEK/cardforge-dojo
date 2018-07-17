@@ -4,7 +4,9 @@ import 'three/examples/js/controls/OrbitControls';
 import Context from './Context';
 import ObjectRenderer from './ObjectRenderer';
 
-const contextDefaults = {
+const contextDefaults: Context = {
+  width: 1,
+  height: 1,
   showHelpers: false,
   shadowMapSize: {
     width: 1024,
@@ -17,15 +19,17 @@ const contextDefaults = {
     width: 2496,
     height: 1595,
     columns: 12,
-    rows: 5,
-    backface: [ 4, 1 ]
+    rows: 5
   },
 
+  frontFace: [ 0, 0 ],
+  backFace: [ 4, 1 ],
+
   cardDimension: {
-    size: 0.25,
+    size: 0.2,
     radius: 0.1
   }
-}
+};
 
 export default class SceneManager {
   private context: Context;
@@ -34,9 +38,9 @@ export default class SceneManager {
 
   constructor(canvas: HTMLCanvasElement) {
     this.context = {
+      ...contextDefaults,
       width: window.innerWidth,
       height: window.innerHeight,
-      ...contextDefaults
     };
 
     this.objectRenderers = [];

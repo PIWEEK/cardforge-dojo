@@ -5,5 +5,4 @@ export default interface SpriteInfo {
   height: number;
   columns: number;
   rows: number;
-  backface: number[];
 }

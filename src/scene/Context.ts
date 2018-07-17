@@ -17,6 +17,9 @@ export default interface Context {
 
   spriteData: SpriteInfo;
 
+  frontFace: [number, number];
+  backFace: [number, number];
+
   cardDimension: {
     size: number,
     radius: number

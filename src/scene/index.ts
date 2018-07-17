@@ -5,8 +5,9 @@ import CameraRenderer from './renderers/CameraRenderer';
 import LightRenderer from './renderers/LightRenderer';
 import HelperRenderer from './renderers/HelperRenderer';
 import GroundRenderer from './renderers/GroundRenderer';
-import BoxRenderer from './renderers/BoxRenderer';
+import BoardRenderer from './renderers/BoardRenderer';
 import CardRenderer from './renderers/CardRenderer';
+import DeckRenderer from './renderers/DeckRenderer';
 
 export default {
   build(canvas: HTMLCanvasElement): SceneManager {
@@ -22,7 +23,9 @@ export default {
 
       // Objects
       new GroundRenderer(),
+      new BoardRenderer(),
       new CardRenderer(),
+      new DeckRenderer(),
     ].forEach(
       (renderer) => sceneManager.add(renderer)
     );
