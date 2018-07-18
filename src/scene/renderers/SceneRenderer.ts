@@ -10,6 +10,6 @@ export default class SceneRenderer implements ObjectRenderer {
     context.scene = scene;
   }
 
-  public update(): void {
+  public dispose(): void {
   }
 }

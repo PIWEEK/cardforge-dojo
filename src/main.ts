@@ -13,15 +13,6 @@ function start() {
   scene.loadDecks(decks);
   scene.start();
   scene.update(defaultGame);
-  scene.update(update(defaultGame, {
-    objects: {
-      ground: {
-        background: {
-          $set: 'kk.png'
-        }
-      }
-    }
-  }));
 }
 
 start();

@@ -43,7 +43,7 @@ export const defaultGame: Game = {
     [`card-${uuid()}`]: {
       type: 'card',
       collectionRef: 'spanish-deck-collection',
-      cardRef: 'swords-12',
+      cardRef: 'coins-1',
       position: {
         type: 'relative',
         ref: boardId,

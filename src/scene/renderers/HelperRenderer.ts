@@ -17,8 +17,11 @@ export default class HelperRenderer implements ObjectRenderer {
     this.stats = stats;
   }
 
-  public update(): void {
+  public render(): void {
     this.stats.update();
+  }
+
+  public dispose(): void {
   }
 
 }

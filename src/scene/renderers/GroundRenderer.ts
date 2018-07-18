@@ -5,6 +5,7 @@ import ObjectRenderer from 'scene/ObjectRenderer';
 
 export default class GroundRenderer implements ObjectRenderer {
 
+  public context: Context;
   public object3d: THREE.Object3D;
 
   private loadTexture1(): THREE.Texture {
@@ -48,6 +49,8 @@ export default class GroundRenderer implements ObjectRenderer {
   }
 
   public init(context: Context): void {
+    this.context = context;
+
     const mesh = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(100, 100, 100, 100),
       new THREE.MeshStandardMaterial({
@@ -67,7 +70,8 @@ export default class GroundRenderer implements ObjectRenderer {
     context.scene.add(this.object3d = mesh);
   }
 
-  public update(): void {
+  public dispose(): void {
+    this.context.scene.remove(this.object3d);
   }
 
 }

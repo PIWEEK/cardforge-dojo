@@ -29,7 +29,6 @@ export default class CardRenderer implements ObjectRenderer {
 
     const collection = resolveCollection(this.context.collections, collectionRef);
     const card = resolveCard(collection, cardRef);
-    console.log(card);
     const { width, height, depth, radius } = cardMeasures(collection);
 
     const mesh = buildCardObject(
@@ -65,11 +64,16 @@ export default class CardRenderer implements ObjectRenderer {
       width / 2, depth / 2, height / 2)));
   }
 
-  public update(): void {
+  public render(): void {
     const intersects = [];
     this.collisionBox.position.copy(this.object3d.position);
     this.collisionBox.raycast(this.context.mouseRay, intersects);
     this.collisionBox.visible = (intersects.length > 0);
+  }
+
+  public dispose(): void {
+    this.context.scene.remove(this.object3d);
+    this.context.scene.remove(this.collisionBox);
   }
 
 }

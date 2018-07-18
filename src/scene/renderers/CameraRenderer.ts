@@ -5,9 +5,11 @@ import ObjectRenderer from 'scene/ObjectRenderer';
 
 export default class CameraRenderer implements ObjectRenderer {
 
+  private context: Context;
   private controls: THREE.OrbitControls;
 
   public init(context: Context): void {
+    this.context = context;
     const { width, height } = context;
 
     const camera = new THREE.PerspectiveCamera(
@@ -41,8 +43,11 @@ export default class CameraRenderer implements ObjectRenderer {
     context.mainCamera = camera;
   }
 
-  public update(): void {
+  public render(): void {
     this.controls.update();
+  }
+
+  public dispose() : void {
   }
 
 }

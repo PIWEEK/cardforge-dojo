@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 
+import { BoardData } from 'data/Game';
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
-import { BoardData } from 'data/Game';
 import config from 'scene/Config';
 
 export default class BoardRenderer implements ObjectRenderer {
 
+  private context: Context;
   private object3d: THREE.Object3D;
 
   constructor(private id: string) {
@@ -23,6 +24,8 @@ export default class BoardRenderer implements ObjectRenderer {
   }
 
   public init(context: Context): void {
+    this.context = context;
+
     const {width, height, depth} = context.game.objects[this.id] as BoardData;
 
     const mesh = new THREE.Mesh(
@@ -45,7 +48,8 @@ export default class BoardRenderer implements ObjectRenderer {
     context.scene.add(this.object3d = mesh);
   }
 
-  public update(): void {
+  public dispose(): void {
+    this.context.scene.remove(this.object3d);
   }
 
 }

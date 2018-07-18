@@ -66,7 +66,7 @@ export default class SceneManager {
 
   public renderFrame(time: number): void {
     this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
-    this.objectRenderers.forEach((obj) => obj.update());
+    this.objectRenderers.forEach((obj) => obj.render && obj.render(time));
     this.renderer.render(this.context.scene, this.context.mainCamera);
     requestAnimationFrame(this.renderFrame.bind(this));
   }
@@ -86,11 +86,27 @@ export default class SceneManager {
     gameDiff
       .filter(({ kind }) => kind === 'N')
       .filter(({ path }) => path.length === 1)
-      .forEach(({ kind, path: [objectId], rhs: objectData }) => {
+      .forEach(({ path: [objectId], rhs: objectData }) => {
         const rendererFn = this.rendererRegistry.get(objectData.type)
         const renderer = rendererFn(objectId);
         renderer.init(this.context);
         this.objectRenderers.set(objectId, renderer);
+      });
+
+    gameDiff
+      .filter(({ kind }) => kind === 'E')
+      .forEach(({ path: [objectId, field], rhs: data }) => {
+        const objState = game.objects[objectId];
+        const objRenderer = this.objectRenderers.get(objectId);
+        objRenderer && objRenderer.change && objRenderer.change(objState, field);
+      });
+
+    gameDiff
+      .filter(({ kind }) => kind === 'D')
+      .forEach(({ path: [objectId]}) => {
+        const objRenderer = this.objectRenderers.get(objectId);
+        this.objectRenderers.delete(objectId);
+        objRenderer && objRenderer.dispose();
       });
 
   }
