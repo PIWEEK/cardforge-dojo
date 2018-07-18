@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
 import config from 'scene/Config';
+import { dispatch } from 'state';
+import { MouseEntersCard, MouseExistsCard } from 'state/actions';
 
 import { CardData, resolvePosition } from 'data/Game';
 import { resolveCollection, resolveCard, cardMeasures } from 'data/Collection';
@@ -14,6 +16,8 @@ export default class CardRenderer implements ObjectRenderer {
   private context: Context;
   private object3d: THREE.Object3D;
   private collisionBox: THREE.Object3D;
+
+  private mouseInside: boolean = false;
 
   constructor(private id: string) {
   }
@@ -68,12 +72,27 @@ export default class CardRenderer implements ObjectRenderer {
     const intersects = [];
     this.collisionBox.position.copy(this.object3d.position);
     this.collisionBox.raycast(this.context.mouseRay, intersects);
-    this.collisionBox.visible = (intersects.length > 0);
+
+    const isMouseInside = intersects.length > 0;
+
+    if (isMouseInside && !this.mouseInside) {
+      dispatch(new MouseEntersCard(this.id));
+    } else if (!isMouseInside && this.mouseInside) {
+      dispatch(new MouseExistsCard(this.id));
+    }
+    this.mouseInside = isMouseInside;
+    //this.collisionBox.visible = ;
   }
 
   public dispose(): void {
     this.context.scene.remove(this.object3d);
     this.context.scene.remove(this.collisionBox);
+  }
+
+  public change(data, field: string): void {
+    if (field === 'selected') {
+      this.collisionBox.visible = data.selected;
+    }
   }
 
 }

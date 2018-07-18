@@ -81,6 +81,11 @@ export default class SceneManager {
 
   public update(game: Game): void {
     const gameDiff = diff(this.context.game.objects, game.objects);
+
+    if (!gameDiff) {
+      return;
+    }
+
     this.context.game = game;
 
     gameDiff
