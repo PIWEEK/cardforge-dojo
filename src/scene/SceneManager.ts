@@ -4,6 +4,9 @@ import 'three/examples/js/controls/OrbitControls';
 import uuid from 'uuid/v4';
 import diff from 'deep-diff';
 
+import { dispatch } from 'state';
+import { MouseClick } from 'state/actions';
+
 import Deck from 'data/Deck';
 import Collection from 'data/Collection';
 import Game from 'data/Game';
@@ -47,6 +50,10 @@ export default class SceneManager {
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
+
+    canvas.onclick = (event) => {
+      dispatch(new MouseClick());
+    }
   }
 
   public registerGlobal(renderer: ObjectRenderer): void {

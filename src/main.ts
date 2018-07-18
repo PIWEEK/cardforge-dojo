@@ -6,7 +6,7 @@ import collections from 'data/collections';
 import decks from 'data/decks';
 import { defaultGame } from 'data/games';
 import { Action, ActionResult, events, dispatch } from './state';
-import { InitializeState } from './state/actions';
+import { InitializeState, Log } from './state/actions';
 import { Observable } from 'rxjs';
 import { scan } from 'rxjs/operators';
 import Game from 'data/Game';
@@ -19,14 +19,33 @@ function start() {
   scene.start();
 
   events.pipe(
-    scan((result: ActionResult, action: Action) => action.update(result.state, events), {})
-  ).subscribe((result: ActionResult) => {
-    console.log("Update");
-    scene.update(result.state);
-    if (result.actions) {
-      result.actions.subscribe(events);
-    }
-  });
+    scan((result: ActionResult, action: Action) => {
+      if (!action.update) {
+        return result;
+      }
+
+      const { state, actions } = action.update(result.state, events);
+
+      if (!state) {
+        return { state: result.state, actions }
+      }
+
+      return {state, actions}
+    }, {})
+  ).subscribe(
+    (result: ActionResult) => {
+      scene.update(result.state);
+      if (result.actions) {
+        // result.actions.subscribe(events);
+        result.actions.subscribe(
+          (v) => events.next(v),
+          (e) => events.next(new Log(`Error ${e}`))
+        )
+      }
+    },
+    (error) => console.error(error),
+    () => console.log("nooo")
+  );
 
   dispatch(new InitializeState(defaultGame));
 }

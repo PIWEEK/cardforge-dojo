@@ -18,10 +18,9 @@ export default class CameraRenderer implements ObjectRenderer {
       0.01,
       100
     );
-    camera.position.z = 1.5;
+    camera.position.z = 0.663;
     camera.position.x = 0;
-    camera.position.y = 1;
-    camera.up = new THREE.Vector3(0, 1, 0);
+    camera.position.y = 1.326;
 
     this.controls = new THREE.OrbitControls(camera);
     this.controls.enableKeys = true;

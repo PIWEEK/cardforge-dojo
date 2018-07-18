@@ -2,11 +2,14 @@ import * as THREE from 'three';
 
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
+import { dispatch } from 'state';
+import { MouseGroundIntersects } from 'state/actions';
 
 export default class GroundRenderer implements ObjectRenderer {
 
   public context: Context;
   public object3d: THREE.Object3D;
+  public lastPoint: THREE.Vector3;
 
   private loadTexture1(): THREE.Texture {
     const texture = new THREE.TextureLoader().load(require('assets/textures/tatami-light.jpg'));
@@ -68,6 +71,18 @@ export default class GroundRenderer implements ObjectRenderer {
     mesh.receiveShadow = true;
 
     context.scene.add(this.object3d = mesh);
+  }
+
+  public render(): void {
+    const intersects = [];
+    this.object3d.raycast(this.context.mouseRay, intersects);
+    if (intersects.length == 1) {
+      const [{ point }] = intersects;
+      if (!this.lastPoint || !point.equals(this.lastPoint)) {
+        this.lastPoint = point;
+        dispatch(new MouseGroundIntersects(point));
+      }
+    }
   }
 
   public dispose(): void {

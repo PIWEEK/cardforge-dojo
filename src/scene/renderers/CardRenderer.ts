@@ -81,7 +81,6 @@ export default class CardRenderer implements ObjectRenderer {
       dispatch(new MouseExistsCard(this.id));
     }
     this.mouseInside = isMouseInside;
-    //this.collisionBox.visible = ;
   }
 
   public dispose(): void {

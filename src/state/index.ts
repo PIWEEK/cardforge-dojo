@@ -6,7 +6,8 @@ export const events = new Subject<Action>();
 
 export type ActionResult = { state: Game, actions?: Observable<Action> }
 export interface Action {
-  update(state: Game, actions: Observable<Action>): ActionResult;
+  type?: Function;
+  update?(state: Game, actions: Observable<Action>): ActionResult;
 }
 
 type ActionResolver = () => Action;
