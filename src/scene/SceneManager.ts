@@ -3,50 +3,10 @@ import 'three/examples/js/controls/OrbitControls';
 
 import Deck from 'data/Deck';
 import Collection from 'data/Collection';
+import Game from 'data/Game';
 
 import Context from './Context';
 import ObjectRenderer from './ObjectRenderer';
-
-const contextDefaults: Context = {
-  width: 1,
-  height: 1,
-  showHelpers: false,
-  shadowMapSize: {
-    width: 1024,
-    height: 1024
-  },
-  penumbra: 0.75,
-
-  // spanish
-  // spriteData: {
-  //   url: require('assets/img/spanish_deck.png'),
-  //   width: 2496,
-  //   height: 1595,
-  //   columns: 12,
-  //   rows: 5
-  // },
-  //
-  // frontFace: [ 0, 0 ],
-  // backFace: [ 4, 1 ],
-
-  // english
-  spriteData: {
-    url: require('assets/img/english_deck.png'),
-    width: 3410,
-    height: 3584,
-    columns: 10,
-    rows: 7
-  },
-
-  frontFace: [ 0, 0 ],
-  backFace: [ 5, 2 ],
-
-  cardDimension: {
-    size: 0.2,
-    radius: 0.1
-  },
-  mouseRay:  new THREE.Raycaster()
-};
 
 export default class SceneManager {
   private context: Context;
@@ -56,9 +16,12 @@ export default class SceneManager {
 
   constructor(canvas: HTMLCanvasElement) {
     this.context = {
-      ...contextDefaults,
       width: window.innerWidth,
       height: window.innerHeight,
+      mouseRay:  new THREE.Raycaster(),
+      game: {
+        objects: []
+      }
     };
 
     this.objectRenderers = [];
@@ -90,28 +53,25 @@ export default class SceneManager {
   public start(): void {
     this.objectRenderers.forEach(
       (renderer) => renderer.init(this.context));
-
-    this.update();
-
-    this.renderer.render(this.context.scene, this.context.mainCamera);
     requestAnimationFrame(this.update.bind(this));
   }
 
-  public update(): void {
+  public update(game: Game): void {
+  }
+
+  public renderFrame(time: number): void {
     this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
     this.objectRenderers.forEach((obj) => obj.update());
     this.renderer.render(this.context.scene, this.context.mainCamera);
-
-    requestAnimationFrame(this.update.bind(this));
+    requestAnimationFrame(this.renderFrame.bind(this));
   }
 
   public loadCollections(collections: Collection[]): void {
+    this.context.collections = collections;
   }
 
   public loadDecks(decks: Deck[]): void {
-  }
-
-  public loadGame(game: any): void {
+    this.context.decks = decks;
   }
 
 }
