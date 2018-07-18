@@ -4,14 +4,15 @@ import { createCollection, calculatePosition } from './utils';
 const collection: Collection = {
   id: 'english-deck-collection',
   name: 'English Deck Collection',
+  width: 341,
+  height: 512,
+  radius: 0.1,
 
   sprites: [{
     id: 'english-deck',
     url: require('assets/img/english_deck.png'),
-    width: 3410,
-    height: 3584,
     columns: 10,
-    rows: 6
+    rows: 7
   }],
 
   back: {

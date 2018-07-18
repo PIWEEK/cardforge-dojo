@@ -1,3 +1,5 @@
+export default Deck;
+
 export interface CardInstanceData {
   id: string;
   instances: number;
@@ -10,4 +12,6 @@ export interface Deck {
   cards: CardInstanceData[]
 }
 
-export default Deck;
+export function resolveDeck(decks: Deck[], deckRef: string): Deck {
+  return decks.find((deck) => deck.id === deckRef);
+}

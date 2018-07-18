@@ -4,12 +4,13 @@ import { createCollection, calculatePosition } from './utils';
 const collection: Collection = {
   id: 'spanish-deck-collection',
   name: 'Spanish deck',
+  width: 208,
+  height: 319,
+  radius: 0.1,
 
   sprites: [{
     id: 'spanish-deck',
     url: require('assets/img/spanish_deck.png'),
-    width: 2496,
-    height: 1595,
     columns: 12,
     rows: 5
   }],
@@ -20,10 +21,10 @@ const collection: Collection = {
   },
 
   cards: [
-    ...createCollection('coins', 'Oros', 12, 'spanish-deck', calculatePosition(0, 10)),
-    ...createCollection('cups', 'Copas', 12, 'spanish-deck', calculatePosition(12, 10)),
-    ...createCollection('swords', 'Espadas', 12, 'spanish-deck', calculatePosition(24, 10)),
-    ...createCollection('clubs', 'Bastos', 12, 'spanish-deck', calculatePosition(36, 10)),
+    ...createCollection('coins', 'Oros', 12, 'spanish-deck', calculatePosition(0, 12)),
+    ...createCollection('cups', 'Copas', 12, 'spanish-deck', calculatePosition(12, 12)),
+    ...createCollection('swords', 'Espadas', 12, 'spanish-deck', calculatePosition(24, 12)),
+    ...createCollection('clubs', 'Bastos', 12, 'spanish-deck', calculatePosition(36, 12)),
   ]
 }
 

@@ -25,10 +25,6 @@ export function calculatePosition(start: number, columns: number): (number) => [
   return (v) => {
     const row = Math.floor((start + v) / columns);
     const col = (start + v) - (row * columns)
-
-    return [
-      (start + v) / 10,
-      (start + v)
-  ]
+    return [ row, col ]
   };
 }

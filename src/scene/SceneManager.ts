@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import 'three/examples/js/controls/OrbitControls';
 
+import uuid from 'uuid/v4';
+import diff from 'deep-diff';
+
 import Deck from 'data/Deck';
 import Collection from 'data/Collection';
 import Game from 'data/Game';
@@ -10,9 +13,11 @@ import ObjectRenderer from './ObjectRenderer';
 
 export default class SceneManager {
   private context: Context;
-  private objectRenderers: ObjectRenderer[];
   private renderer: THREE.WebGLRenderer;
   private mouse: THREE.Vector2 = new THREE.Vector2();
+
+  private rendererRegistry: Map<string, (string?) => ObjectRenderer> = new Map();
+  private objectRenderers: Map<string, ObjectRenderer> = new Map();
 
   constructor(canvas: HTMLCanvasElement) {
     this.context = {
@@ -20,11 +25,9 @@ export default class SceneManager {
       height: window.innerHeight,
       mouseRay:  new THREE.Raycaster(),
       game: {
-        objects: []
+        objects: {}
       }
     };
-
-    this.objectRenderers = [];
     this.setupRenderer(canvas);
   }
 
@@ -46,17 +49,19 @@ export default class SceneManager {
     };
   }
 
-  public add(renderer: ObjectRenderer): void {
-    this.objectRenderers.push(renderer);
+  public registerGlobal(renderer: ObjectRenderer): void {
+    this.objectRenderers.set(uuid(), renderer);
+  }
+
+  public register(objectType: string, rendererFn: (string?) => ObjectRenderer): void {
+    this.rendererRegistry.set(objectType, rendererFn);
   }
 
   public start(): void {
     this.objectRenderers.forEach(
       (renderer) => renderer.init(this.context));
-    requestAnimationFrame(this.update.bind(this));
-  }
-
-  public update(game: Game): void {
+    this.renderFrame(0);
+    requestAnimationFrame(this.renderFrame.bind(this));
   }
 
   public renderFrame(time: number): void {
@@ -72,6 +77,22 @@ export default class SceneManager {
 
   public loadDecks(decks: Deck[]): void {
     this.context.decks = decks;
+  }
+
+  public update(game: Game): void {
+    const gameDiff = diff(this.context.game.objects, game.objects);
+    this.context.game = game;
+
+    gameDiff
+      .filter(({ kind }) => kind === 'N')
+      .filter(({ path }) => path.length === 1)
+      .forEach(({ kind, path: [objectId], rhs: objectData }) => {
+        const rendererFn = this.rendererRegistry.get(objectData.type)
+        const renderer = rendererFn(objectId);
+        renderer.init(this.context);
+        this.objectRenderers.set(objectId, renderer);
+      });
+
   }
 
 }

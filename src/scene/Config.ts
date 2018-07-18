@@ -8,6 +8,9 @@ interface Config {
   penumbra: number;
   dimensions: {
     card: number;
+    cardDepth: number;
+    deckDepth: number;
+    grid: number;
   }
 }
 
@@ -20,7 +23,10 @@ const DefaultConfig: Config = {
   penumbra: 0.75,
 
   dimensions: {
-    card: 0.2
+    card: 0.2,
+    cardDepth: 0.005,
+    deckDepth: 0.2,
+    grid: 0.2
   }
 };
 

@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 
-import SpriteInfo from 'scene/SpriteInfo';
-
-import { loadCardTexture } from 'scene/builders/TexturesBuilder';
+import { Collection, CardData } from 'data/Collection';
+import { loadSpriteTexture } from 'scene/builders/TexturesBuilder';
 import { buildRoundedRectShape } from 'scene/builders/ShapesBuilder';
 
 export function buildCardGeometry(
@@ -46,14 +45,9 @@ export function buildCardObject(
   height: number,
   depth: number,
   radius: number,
-  faceSprite: SpriteInfo,
-  faceCoords: [number, number],
-  backSprite: SpriteInfo,
-  backCoords: [number, number]
+  collection: Collection,
+  card: CardData
 ): THREE.Mesh {
-  const [ backRow, backCol ] = backCoords;
-  const [ faceRow, faceCol ] = faceCoords;
-
   const geometry = buildCardGeometry(width, height, depth, radius);
 
   const mesh = new THREE.Mesh(
@@ -63,12 +57,10 @@ export function buildCardObject(
         color: 0xFFFFFF
       }),
       new THREE.MeshStandardMaterial({
-        map: loadCardTexture(
-          faceSprite, width, height, faceRow, faceCol)
+        map: loadSpriteTexture(collection, card.front)
       }),
       new THREE.MeshStandardMaterial({
-        map: loadCardTexture(
-          backSprite, width, height, backRow, backCol)
+        map: loadSpriteTexture(collection, collection.back)
       })
     ]
   );

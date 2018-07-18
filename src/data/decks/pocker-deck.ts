@@ -2,7 +2,7 @@ import Deck from 'data/Deck';
 import { generate } from './utils';
 
 const deck: Deck = {
-  id: 'pocker-deck',
+  id: 'poker-deck',
   collection: 'english-deck-collection',
   name: 'Standard 52 card poker deck',
 

@@ -1,57 +1,68 @@
 import uuid from 'uuid/v4';
 import Game from 'data/Game';
 
-const boardId: string = uuid();
+const boardId: string = `board-${uuid()}`;
 
 export const defaultGame: Game = {
-  ground: {
-    background: require('assets/textures/rattan-wicker.jpg'),
-  },
-
-  objects: [
-    {
+  objects: {
+    ground: {
+      type: 'ground',
+      background: require('assets/textures/rattan-wicker.jpg'),
+    },
+    [boardId]: {
       type: 'board',
-      id: boardId,
       background: require('assets/textures/fabric-blue.png'),
-      width: 1000,
-      height: 800,
-      depth: 0.1,
+      width: 2.5,
+      height: 1.5,
+      depth: 0.02,
       offsetX: 0,
       offsetY: 0
     },
-    {
+    [`deck-${uuid()}`]: {
       type: 'deck',
-      id: uuid(),
       deckRef: 'spanish-deck-standard',
       position: {
-        type: 'relativeGrid',
+        type: 'relative',
         ref: boardId,
-        row: 10,
-        column: 1
+        offsetX: 0.4,
+        offsetY: 0,
+        offsetZ: 0.4
       }
     },
-    {
+    [`deck-${uuid()}`]: {
       type: 'deck',
-      id: uuid(),
-      deckRef: 'spanish-deck-standard',
+      deckRef: 'poker-deck',
       position: {
-        type: 'relativeGrid',
+        type: 'relative',
         ref: boardId,
-        row: 10,
-        column: 1
+        offsetX: 0.7,
+        offsetY: 0,
+        offsetZ: 0.4
       }
     },
-    {
+    [`card-${uuid()}`]: {
       type: 'card',
-      id: uuid(),
-      collectionRef: 'english-deck-collection',
-      cardRef: 'hearts-1',
+      collectionRef: 'spanish-deck-collection',
+      cardRef: 'swords-12',
       position: {
-        type: 'relativeGrid',
+        type: 'relative',
         ref: boardId,
-        row: 10,
-        column: 1
+        offsetX: 0.4,
+        offsetY: 0,
+        offsetZ: 0.8
       }
-    }
-  ]
+    },
+    [`card-${uuid()}`]: {
+      type: 'card',
+      collectionRef: 'english-deck-collection',
+      cardRef: 'hearts-10',
+      position: {
+        type: 'relative',
+        ref: boardId,
+        offsetX: 0.7,
+        offsetY: 0,
+        offsetZ: 0.8
+      }
+    },
+  }
 };

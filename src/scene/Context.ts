@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-import SpriteInfo from './SpriteInfo';
 import Collection from 'data/Collection';
 import Deck from 'data/Deck';
+import Game from 'data/Game';
 
 export default interface Context {
   width: number;

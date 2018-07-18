@@ -1,17 +1,21 @@
+export default Game;
 
-type ObjectData = BoardData | DeckData | CardData;
-type Position = AbsolutePosition | RelativePosition | RelativeGridPosition;
+import { Vector3 } from 'three';
+import config from 'scene/Config';
 
-enum PositionType { absolute, relative, relativeGrid };
+export type ObjectData = GroundData | BoardData | DeckData | CardData;
+export type Position = AbsolutePosition | RelativePosition | RelativeGridPosition;
 
-interface AbsolutePosition {
+export enum PositionType { absolute, relative, relativeGrid };
+
+export interface AbsolutePosition {
   type: 'absolute';
   x: number
   y: number;
   z: number;
 }
 
-interface RelativePosition {
+export interface RelativePosition {
   type: 'relative';
   ref: string;
   offsetX: number;
@@ -19,7 +23,7 @@ interface RelativePosition {
   offsetZ: number;
 }
 
-interface RelativeGridPosition {
+export interface RelativeGridPosition {
   type: 'relativeGrid';
   ref: string;
   row: number;
@@ -27,19 +31,18 @@ interface RelativeGridPosition {
 }
 
 export interface Game {
-  ground?: GroundData,
-  objects: ObjectData[]
+  objects: { [objectId: string]: ObjectData }
 }
 
-interface GroundData {
+export interface GroundData {
+  type: 'ground'
   background: string;
 }
 
-enum ObjectDataType { board, deck, card }
+export enum ObjectDataType { board, deck, card }
 
-interface BoardData {
+export interface BoardData {
   type: 'board';
-  id: string;
   background: string;
   width: number;
   height: number;
@@ -48,19 +51,40 @@ interface BoardData {
   offsetY?: number;
 }
 
-interface DeckData {
+export interface DeckData {
   type: 'deck';
-  id: string;
   deckRef: string;
   position: Position
 }
 
-interface CardData {
+export interface CardData {
   type: 'card';
-  id: string;
   collectionRef: string;
   cardRef: string;
   position: Position
 }
 
-export default Game;
+export function resolvePosition(game: Game, position: Position): Vector3 {
+  if (position.type === 'absolute') {
+    return new Vector3(position.x, position.y, position.z);
+  } else {
+    // Only allow at the moment board as relative
+    const ref: BoardData = (<BoardData>game.objects[position.ref]);
+
+    if (position.type === 'relative') {
+      return new Vector3(
+        -(ref.width / 2) + position.offsetX,
+        ref.depth + position.offsetY,
+        -(ref.height / 2) + position.offsetZ
+      );
+    } else {
+      return new Vector3(
+        (-ref.width / 2) + position.column * config.dimensions.grid,
+        ref.depth,
+        (-ref.height / 2) + position.row * config.dimensions.grid
+      );
+    }
+  }
+
+
+}

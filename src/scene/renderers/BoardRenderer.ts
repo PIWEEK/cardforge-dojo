@@ -2,10 +2,15 @@ import * as THREE from 'three';
 
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
+import { BoardData } from 'data/Game';
+import config from 'scene/Config';
 
 export default class BoardRenderer implements ObjectRenderer {
 
   private object3d: THREE.Object3D;
+
+  constructor(private id: string) {
+  }
 
   private createTexture(): THREE.Texture {
     const texture = new THREE.TextureLoader().load(require('assets/textures/fabric-blue.png'));
@@ -18,8 +23,14 @@ export default class BoardRenderer implements ObjectRenderer {
   }
 
   public init(context: Context): void {
+    const {width, height, depth} = context.game.objects[this.id] as BoardData;
+
     const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(2.5, 1.5, 0.02),
+      new THREE.BoxGeometry(
+        width,
+        height,
+        depth
+      ),
       new THREE.MeshStandardMaterial({
         color: 0x0000cc,
         roughness: 1.0,

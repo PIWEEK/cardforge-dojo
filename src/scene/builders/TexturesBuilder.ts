@@ -1,19 +1,24 @@
 import * as THREE from 'three';
 
-import SpriteInfo from 'scene/SpriteInfo';
+import { Collection, SpriteCoord, resolveSprite, cardMeasures } from 'data/Collection';
 
-export function loadCardTexture(
-  info: SpriteInfo,
-  faceWidth: number,
-  faceHeight: number,
-  row: number, column: number
-): THREE.Texture {
-  const spriteWidth = info.width;
-  const spriteHeight = info.height;
-  const spriteCols = info.columns;
-  const spriteRows = info.rows;
+export function loadSpriteTexture(collection: Collection, coord: SpriteCoord | string): THREE.Texture {
+  if (typeof coord === "string") {
+    const urlTexture = new THREE.TextureLoader().load(coord);
+    urlTexture.anisotropy = 4;
+    return urlTexture;
+  }
 
-  const texture = new THREE.TextureLoader().load(info.url);
+  const spriteData = resolveSprite(collection, coord);
+  const spriteWidth = collection.width * spriteData.columns;
+  const spriteHeight = collection.height * spriteData.rows;
+  const spriteCols = spriteData.columns;
+  const spriteRows = spriteData.rows;
+  const [row, column] = coord.position;
+
+  const { width: faceWidth, height: faceHeight } = cardMeasures(collection);
+
+    const texture = new THREE.TextureLoader().load(spriteData.url);
   texture.anisotropy = 4;
 
   const offsetX = (1 / spriteWidth) * (spriteWidth / spriteCols)
@@ -28,5 +33,5 @@ export function loadCardTexture(
 }
 
 export default {
-  loadCardTexture
+  loadSpriteTexture
 };

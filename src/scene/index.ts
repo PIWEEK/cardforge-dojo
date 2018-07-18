@@ -14,21 +14,17 @@ export default {
     // Initialize scene
     const sceneManager = new SceneManager(canvas);
 
-    [
-      // Global
-      new SceneRenderer(),
-      new CameraRenderer(),
-      new LightRenderer(),
-      new HelperRenderer(),
+    // Global handlers (single instance)
+    sceneManager.registerGlobal(new SceneRenderer());
+    sceneManager.registerGlobal(new CameraRenderer());
+    sceneManager.registerGlobal(new LightRenderer());
+    sceneManager.registerGlobal(new HelperRenderer());
 
-      // Objects
-      new GroundRenderer(),
-      new BoardRenderer(),
-      new CardRenderer(),
-      new DeckRenderer(),
-    ].forEach(
-      (renderer) => sceneManager.add(renderer)
-    );
+    // Per object renderers (instance per object)
+    sceneManager.register('ground', () => new GroundRenderer());
+    sceneManager.register('board', (id) => new BoardRenderer(id));
+    sceneManager.register('card',  (id) => new CardRenderer(id));
+    sceneManager.register('deck',  (id) => new DeckRenderer(id));
 
     return sceneManager;
   }

@@ -2,58 +2,71 @@ import * as THREE from 'three';
 
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
-import SpriteInfo from 'scene/SpriteInfo';
+import config from 'scene/Config';
+
+import { DeckData, resolvePosition } from 'data/Game';
+import { resolveDeck } from 'data/Deck';
+import { resolveCollection, deckMeasures } from 'data/Collection';
 
 import { buildCardObject } from 'scene/builders/CardObjectBuilder';
 import { buildSelectionBox } from 'scene/builders/SelectionObjectBuilder';
-
-const DECK_DEPTH: number = 0.2;
 
 export default class DeckRenderer implements ObjectRenderer {
   private context: Context;
   private object3d: THREE.Object3D;
   private collisionBox: THREE.Object3D;
 
+  constructor(private id: string) {
+  }
+
   public init(context: Context): void {
     this.context = context;
 
-    // const cardWidth = context.spriteData.width / context.spriteData.columns;
-    // const cardHeight = context.spriteData.height / context.spriteData.rows;
-    // const cardRatio = cardHeight / cardWidth;
-    //
-    // const width = context.cardDimension.size;
-    // const height = width * cardRatio;
-    // const depth = DECK_DEPTH * context.cardDimension.size;
-    //
-    // const radius = context.cardDimension.radius * context.cardDimension.size;
-    //
-    // const mesh = buildCardObject(
-    //   width, height, depth, radius,
-    //   context.spriteData,
-    //   context.frontFace,
-    //   context.spriteData,
-    //   context.backFace
-    // );
-    //
-    // mesh.rotation.x = -Math.PI / 2;
-    // mesh.rotation.y = Math.PI;
-    //
-    // mesh.position.x = (-2.5 / 2.0) + width * 2;
-    // mesh.position.y = (depth / 2) + 0.02;
-    // mesh.castShadow = true;
-    // mesh.receiveShadow = false;
-    //
-    // context.scene.add(this.object3d = mesh);
-    //
-    // const collisionBox = buildSelectionBox(width, height, depth, mesh);
-    // collisionBox.visible = false;
-    // context.scene.add(this.collisionBox = collisionBox);
+    const {deckRef, position} = this.context.game.objects[this.id] as DeckData;
+
+    const deck = resolveDeck(this.context.decks, deckRef);
+    const collection = resolveCollection(this.context.collections, deck.collection);
+    const { width, height, depth, radius } = deckMeasures(collection);
+
+    const mesh = buildCardObject(
+      width, height, depth, radius,
+      collection,
+      collection.cards[0] // Card displayed on the bottom
+    );
+
+    // Make the deck parallel to the Z plane
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.rotation.y = Math.PI;
+
+    // Enable shadows
+    mesh.castShadow = true;
+    mesh.receiveShadow = false;
+
+    // Change position
+    //mesh.position.x = (-2.5 / 2.0) + width * 2;
+    mesh.position.y = (depth / 2) + 0.02;
+
+    // Add to scene
+    context.scene.add(this.object3d = mesh);
+
+    // Box that will be displayed on hover
+    const collisionBox = buildSelectionBox(width, height, depth, mesh);
+    collisionBox.visible = false;
+    context.scene.add(this.collisionBox = collisionBox);
+
+    const posVec = resolvePosition(
+      this.context.game,
+      position
+    );
+    mesh.position.copy(posVec.add(new THREE.Vector3(
+      width / 2, depth / 2, height / 2)));
   }
 
   public update(): void {
-    // const intersects = [];
-    // this.collisionBox.raycast(this.context.mouseRay, intersects);
-    // this.collisionBox.visible = (intersects.length > 0);
+    const intersects = [];
+    this.collisionBox.position.copy(this.object3d.position);
+    this.collisionBox.raycast(this.context.mouseRay, intersects);
+    this.collisionBox.visible = (intersects.length > 0);
   }
 
 }
