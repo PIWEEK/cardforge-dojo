@@ -49,7 +49,7 @@ export default class CardRenderer implements ObjectRenderer {
 
     // Make the deck parallel to the Z plane
     mesh.rotation.x = -Math.PI / 2;
-    mesh.rotation.y = Math.PI;
+    mesh.rotation.y = (<any>this.state).flip ? 0 : Math.PI;
 
     // Enable shadows
     mesh.castShadow = true;

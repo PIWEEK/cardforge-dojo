@@ -21,18 +21,18 @@ export const game = (collections: Collection[], decks: Deck[]) => ({
       offsetX: 0,
       offsetY: 0
     } as BoardData,
-     [`deck-${uuid()}`]: {
-       type: 'deck',
-       deckRef: 'spanish-deck-standard',
-       position: {
-         type: 'relative',
-         ref: boardId,
-         offsetX: 0.4,
-         offsetY: 0,
-         offsetZ: 0.4
-       },
-       cards: randomDeck(collections, decks, 'spanish-deck-standard')
-     } as DeckData,
+    [`deck-${uuid()}`]: {
+      type: 'deck',
+      deckRef: 'spanish-deck-standard',
+      position: {
+        type: 'relative',
+        ref: boardId,
+        offsetX: 0.4,
+        offsetY: 0,
+        offsetZ: 0.4
+      },
+      cards: randomDeck(collections, decks, 'spanish-deck-standard')
+    } as DeckData,
     [`deck-${uuid()}`]: {
       type: 'deck',
       deckRef: 'poker-deck',
@@ -50,6 +50,7 @@ export const game = (collections: Collection[], decks: Deck[]) => ({
       type: 'card',
       collectionRef: 'spanish-deck-collection',
       cardRef: 'coins-1',
+      flip: true,
       position: {
         type: 'relative',
         ref: boardId,
@@ -62,6 +63,7 @@ export const game = (collections: Collection[], decks: Deck[]) => ({
       type: 'card',
       collectionRef: 'english-deck-collection',
       cardRef: 'hearts-10',
+      flip: false,
       position: {
         type: 'relative',
         ref: boardId,
