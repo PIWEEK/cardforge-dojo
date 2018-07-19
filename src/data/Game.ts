@@ -85,6 +85,4 @@ export function resolvePosition(game: Game, position: Position): Vector3 {
       );
     }
   }
-
-
 }

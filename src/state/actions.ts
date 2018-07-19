@@ -1,10 +1,11 @@
 import update from 'immutability-helper';
-import { Observable, interval, of, merge } from 'rxjs';
-import { map, takeWhile, filter, tap, flatMap, endWith } from 'rxjs/operators';
+import uuid from 'uuid/v4';
+import { Observable, interval, of, merge, asyncScheduler } from 'rxjs';
+import { map, takeWhile, filter, tap, flatMap, endWith, take, observeOn } from 'rxjs/operators';
 
 import * as dom from 'utils/dom';
 import Game from 'data/Game';
-import { Action, ActionResult } from './Action';
+import { BaseAction, Action, ActionResult } from './Action';
 
 
 function Typed(target) {
@@ -13,21 +14,13 @@ function Typed(target) {
 }
 
 @Typed
-export class Noop implements Action {
-  public update(state: Game): ActionResult {
-    // Ugly type hack in order to workaround typescript types
-    console.log("Noop: " + (<any>this)['type'].name);
-    return { state };
+export class Log extends BaseAction {
+  constructor(public log: string) {
+    super();
   }
-}
 
-@Typed
-export class Log implements Action {
-  constructor(public log: string) {}
-
-  public update(state: Game): ActionResult {
+  public effects() {
     console.log(this.log);
-    return { state }
   }
 }
 
@@ -42,162 +35,165 @@ export class InitializeState implements Action {
   }
 }
 
-function pass(state: Game): ActionResult {
-  return { state };
-}
-
 @Typed
-export class MouseEntersCard implements Action {
-  constructor(public cardId: string) {}
+export class MouseEntersCard extends BaseAction {
+  constructor(public cardId: string) {
+    super();
+  }
 
-  public update(state: Game, actions: Observable<Action>): ActionResult {
+  public effects() {
     dom.changeCursor('hover');
-    const newState = update(state, {
-      objects: {
-        [this.cardId]: { selected: { $set: true}}
-      }});
+  }
 
-    const newActions =
-      actions.pipe(
-        takeWhile((a) => a.type !== MouseExistsCard),
-        filter((a) => a.type === MouseDown),
-        flatMap((a) => merge(
-          of(new StartDragging(this.cardId)),
-          actions.pipe(
-            takeWhile((a) => a.type !== MouseUp),
-            filter((a) => a.type === MouseGroundIntersects),
-            map((a: MouseGroundIntersects) => new MoveCard(this.cardId, a.point)),
-            endWith(new EndDragging(this.cardId))
-          ))))
-    return { state: newState, actions: newActions};
+  public mutations() {
+    return {
+      objects: {
+        [this.cardId]: { selected: { $set: true } }
+      }
+    };
+  }
+
+  public deriveActions(actions: Observable<Action>) {
+    return actions.pipe(
+      takeWhile((a) => a.type !== MouseExistsCard),
+      filter((a) => a.type === MouseDown),
+      flatMap((a) => merge(
+        of(new StartDragging(this.cardId)).pipe(
+          observeOn(asyncScheduler)
+        ),
+        actions.pipe(
+          takeWhile((a) => a.type !== MouseUp),
+          filter((a) => a.type === MouseGroundIntersects),
+          map((a: MouseGroundIntersects) => new MoveCard(this.cardId, a.point)),
+          endWith(new EndDragging(this.cardId))
+        )
+      )));
   }
 }
 
 @Typed
-export class MouseExistsCard implements Action {
-  constructor(public cardId: string) {}
+export class MouseExistsCard extends BaseAction {
+  constructor(public cardId: string) {
+    super();
+  }
 
-  public update(state: Game): ActionResult {
+  public effects() {
     dom.clearCursor();
-    const newState = update(state, {
+  }
+
+  public mutations() {
+    return {
       objects: {
         [this.cardId]: {
-          selected: {
-            $set: false
-          }
+          selected: { $set: false }
         }
-      }});
-    return { state: newState };
+      }
+    };
   }
 }
 
 @Typed
-export class MouseGroundIntersects extends Noop {
+export class MouseGroundIntersects extends BaseAction {
   constructor(public point: THREE.Vector3) {
     super();
   }
-  public update(state: Game): ActionResult {
-    const { x, y, z} = this.point;
 
-    return { state: update(state, {
+  public mutations(): object {
+    const { x, y, z} = this.point;
+    return {
       mouse: mouse => update(mouse || {}, {
         ground: ground => update(ground || {}, {
           $set: { x, y, z }
         })
-      })})};
+      })
+    }
   }
 }
 
 @Typed
-export class MouseDown implements Action {
-  public update(state: Game): ActionResult {
-    return { state };
-  }
+export class MouseDown extends BaseAction {
 }
 
 @Typed
-export class MouseUp implements Action {
-  public update(state: Game): ActionResult {
-    return { state };
-  }
+export class MouseUp extends BaseAction {
 }
 
 @Typed
-export class StartDragging implements Action {
-  constructor(public cardId: string) {}
+export class StartDragging extends BaseAction {
+  constructor(public cardId: string) {
+    super();
+  }
 
-  public update(state: Game): ActionResult {
+  public effects() {
     dom.changeCursor('dragging');
-    const newState = update(state, {
-      dragging: {
-        $set: true
-      },
+  }
+
+  public mutations() {
+    return {
+      dragging: { $set: true },
       objects: {
         [this.cardId]: {
-          dragging: {
-            $set: true
-          }
+          dragging: { $set: true }
         }
-      }});
-    return { state: newState };
+      }
+    };
   }
 }
 
 @Typed
-export class EndDragging implements Action {
-  constructor(public cardId: string) {}
+export class EndDragging extends BaseAction {
+  constructor(public cardId: string) {
+    super();
+  }
 
-  public update(state: Game): ActionResult {
+  public effects() {
     dom.clearCursor();
-    const newState = update(state, {
-      dragging: {
-        $set: false
-      },
+  }
+
+  public mutations() {
+    return {
+      dragging: { $set: false },
       objects: {
         [this.cardId]: {
-          dragging: {
-            $set: false
-          }
+          selected: { $set: false },
+          dragging: { $set: false }
         }
-      }});
-    return { state: newState };
+      }
+    };
   }
 }
+
 @Typed
-export class FlipSelectedObject implements Action {
+export class FlipSelectedObject extends BaseAction {
 
-  public update(oldState: Game): ActionResult {
-    let state = oldState;
-
+  public mutations(state: Game) {
     const selected: any = Object
       .entries(state.objects)
       .find(([id, value]) => (<any>value).selected);
 
     if (selected) {
-      const op = {
+      return {
         objects: {
           [selected[0]]: {
             $toggle: ['flip']
           }
         }
       };
-
-      state = update(state, op)
     }
-
-    return { state };
   }
 }
 
 @Typed
-export class MoveCard implements Action {
+export class MoveCard extends BaseAction {
   constructor(
     public cardId,
     public point: THREE.Vector3
-  ) {}
+  ) {
+    super();
+  }
 
-  public update(old: Game): ActionResult {
-    const op = {
+  public mutations() {
+    return {
       objects: {
         [ this.cardId ]: {
           position: {
@@ -208,9 +204,116 @@ export class MoveCard implements Action {
               z: this.point.z
             }
           }
+        }}};
+  }
+
+}
+
+@Typed
+export class MouseEntersDeck extends BaseAction {
+  constructor(public deckId: string) {
+    super();
+  }
+
+  public mutations(): object {
+    return {
+      objects: {
+        [this.deckId]: {
+          selected: { $set: true }
         }
       }
-    }
-    return { state: update(old, op) };
+    };
+  }
+
+  public deriveActions(actions: Observable<Action>): Observable<Action> {
+    return actions.pipe(
+      takeWhile((a) => a.type !== MouseExitsDeck),
+      filter((a) => a.type === MouseDown),
+      flatMap(
+        () => actions.pipe(
+          filter((a) => a.type === MouseGroundIntersects),
+          take(1),
+          flatMap((moveAction: MouseGroundIntersects) => merge(
+            of(new PopupCard(this.deckId, moveAction.point)).pipe(
+              observeOn(asyncScheduler)
+            ),
+            actions.pipe(
+              filter((a) => a.type === CardCreated),
+              take(1),
+              flatMap((cardCreated: CardCreated) => merge(
+                of(new StartDragging(cardCreated.cardId)),
+                actions.pipe(
+                  takeWhile((a) => a.type !== MouseUp),
+                  filter((a) => a.type === MouseGroundIntersects),
+                  map((a: MouseGroundIntersects) => new MoveCard(cardCreated.cardId, a.point)),
+                  endWith(new EndDragging(cardCreated.cardId))
+                )
+              )))
+          ))
+        ))
+    );
+  }
+
+}
+
+@Typed
+export class MouseExitsDeck extends BaseAction {
+  constructor(public deckId: string) {
+    super();
+  }
+
+  public mutations(): object {
+    return {
+      objects: {
+        [this.deckId]: {
+          selected: { $set: false }
+        }
+      }
+    };
+  }
+}
+
+@Typed
+export class PopupCard implements Action {
+  constructor(public deckId: string,
+              public point: THREE.Vector3) {}
+
+  public mutations(cardId: string): object {
+    return {
+      objects: {
+        [cardId]: {
+          $set: {
+            selected: true,
+            type: 'card',
+            collectionRef: 'spanish-deck-collection',
+            cardRef: 'coins-1',
+            position: {
+              type: 'absolute',
+              x: this.point.x,
+              y: this.point.y,
+              z: this.point.z
+            }
+          }}
+      }
+    };
+  }
+
+  public deriveActions(cardId: string): Observable<Action> {
+    return of(new CardCreated(cardId));
+  }
+
+  public update(state: Game, actions: Observable<Action>): ActionResult {
+    const cardId = `card-${uuid()}`;
+    const newState = update(state, this.mutations(cardId));
+    const newActions = this.deriveActions(cardId);
+    return { state: newState, actions: newActions };
+  }
+
+}
+
+@Typed
+export class CardCreated extends BaseAction {
+  constructor(public cardId: string) {
+    super();
   }
 }

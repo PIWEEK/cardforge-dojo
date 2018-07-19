@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
 import config from 'scene/Config';
+import dispatch from 'state';
+import { MouseEntersDeck, MouseExitsDeck } from 'state/actions';
 
 import { DeckData, resolvePosition } from 'data/Game';
 import { resolveDeck } from 'data/Deck';
@@ -15,6 +17,9 @@ export default class DeckRenderer implements ObjectRenderer {
   private context: Context;
   private object3d: THREE.Object3D;
   private collisionBox: THREE.Object3D;
+
+  private hover: boolean = false;
+  private disallowHover: boolean = false;
 
   constructor(private id: string) {
   }
@@ -65,13 +70,31 @@ export default class DeckRenderer implements ObjectRenderer {
   public render(): void {
     const intersects = [];
     this.collisionBox.position.copy(this.object3d.position);
+    this.collisionBox.rotation.copy(this.object3d.rotation);
     this.collisionBox.raycast(this.context.mouseRay, intersects);
-    this.collisionBox.visible = (intersects.length > 0);
+    this.collisionBox.visible = this.hover && !this.disallowHover;
+
+    const isMouseInside = intersects.length > 0;
+
+    if (!this.disallowHover) {
+      if (!this.hover && isMouseInside) {
+        dispatch(new MouseEntersDeck(this.id));
+      }
+      if (this.hover && !isMouseInside) {
+        dispatch(new MouseExitsDeck(this.id));
+      }
+    }
   }
 
   public dispose(): void {
     this.context.scene.remove(this.object3d);
     this.context.scene.remove(this.collisionBox);
+  }
+
+  public change(data, field: string): void {
+    if (field === 'selected') {
+      this.hover = data.selected;
+    }
   }
 
 }
