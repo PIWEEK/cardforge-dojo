@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
 
 import Context from 'scene/Context';
 import ObjectRenderer from 'scene/ObjectRenderer';
@@ -17,7 +18,10 @@ export default class CardRenderer implements ObjectRenderer {
   private object3d: THREE.Object3D;
   private collisionBox: THREE.Object3D;
 
+  private isSelected: boolean = false;
   private mouseInside: boolean = false;
+  private disableSelection: boolean = false;
+  private cardBaseline: number;
 
   constructor(private id: string) {
   }
@@ -50,7 +54,8 @@ export default class CardRenderer implements ObjectRenderer {
 
     // Change position
     //mesh.position.x = (-2.5 / 2.0) + width * 2;
-    mesh.position.y = (depth / 2) + 0.02;
+    this.cardBaseline = (depth / 2) + 0.02
+    mesh.position.y = this.cardBaseline;
 
     // Add to scene
     context.scene.add(this.object3d = mesh);
@@ -71,6 +76,7 @@ export default class CardRenderer implements ObjectRenderer {
   public render(): void {
     const intersects = [];
     this.collisionBox.position.copy(this.object3d.position);
+    this.collisionBox.rotation.copy(this.object3d.rotation);
     this.collisionBox.raycast(this.context.mouseRay, intersects);
 
     const isMouseInside = intersects.length > 0;
@@ -90,11 +96,40 @@ export default class CardRenderer implements ObjectRenderer {
 
   public change(data, field: string): void {
     if (field === 'selected') {
-      this.collisionBox.visible = data.selected;
+      this.isSelected = data.selected;
+      this.collisionBox.visible = data.selected && !this.disableSelection;
     }
     if (field === 'flip') {
-      this.object3d.rotation.y += Math.PI;
+      if (data.flip) {
+        this.animateFlip(Math.PI);
+      } else {
+        this.animateFlip(0);
+      }
     }
+  }
+
+  private animateFlip(targetAngle: number) {
+    const stepSpeed = 300;
+    const rotate = new TWEEN.Tween(this.object3d.rotation).to({
+      y: targetAngle
+    }, stepSpeed);
+    const goUp = new TWEEN.Tween(this.object3d.position).to({
+      y: this.cardBaseline + 0.25
+    }, stepSpeed);
+    const goDown = new TWEEN.Tween(this.object3d.position).to({
+      y: this.cardBaseline
+    }, stepSpeed);
+
+    rotate.start();
+    goUp.onStart(() => {
+      this.collisionBox.visible = false;
+      this.disableSelection = true
+    });
+    goDown.onComplete(() => {
+      this.collisionBox.visible = this.isSelected;
+      this.disableSelection = false;
+    })
+    goUp.chain(goDown).start()
   }
 
 }

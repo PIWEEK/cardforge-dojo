@@ -29,7 +29,7 @@ function start() {
   dispatch(new InitializeState(defaultGame));
 
   // Test
-  console.log(MenuBuilder.buildMenu(times(10).map((x) => `option${x}`)));
+  //console.log(MenuBuilder.buildMenu(times(10).map((x) => `option${x}`)));
 }
 
 start();

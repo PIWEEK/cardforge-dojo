@@ -3,6 +3,7 @@ import 'three/examples/js/controls/OrbitControls';
 
 import uuid from 'uuid/v4';
 import diff from 'deep-diff';
+import TWEEN from '@tweenjs/tween.js';
 
 import { dispatch } from 'state';
 import { MouseClick } from 'state/actions';
@@ -75,6 +76,7 @@ export default class SceneManager {
     this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
     this.objectRenderers.forEach((obj) => obj.render && obj.render(time));
     this.renderer.render(this.context.scene, this.context.mainCamera);
+    TWEEN.update(time);
     requestAnimationFrame(this.renderFrame.bind(this));
   }
 

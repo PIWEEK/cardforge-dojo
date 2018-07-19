@@ -8,7 +8,6 @@ import update from 'immutability-helper';
 
 function Typed(target) {
   target.prototype.type = target;
-  console.log(target.name);
   return target;
 }
 
@@ -36,7 +35,6 @@ export class InitializeState implements Action {
   constructor(private state: Game) {}
 
   public update(state: Game): ActionResult {
-    console.log(this);
     return {
       state: this.state,
     }
