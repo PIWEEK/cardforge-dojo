@@ -92,6 +92,9 @@ export default class CardRenderer implements ObjectRenderer {
     if (field === 'selected') {
       this.collisionBox.visible = data.selected;
     }
+    if (field === 'flip') {
+      this.object3d.rotation.y += Math.PI;
+    }
   }
 
 }

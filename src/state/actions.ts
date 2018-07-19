@@ -2,7 +2,7 @@ import { Observable, interval } from 'rxjs';
 import { map, takeWhile, filter, tap } from 'rxjs/operators';
 
 import Game from 'data/Game';
-import { Action, ActionResult } from 'state';
+import { Action, ActionResult } from './Action';
 
 import update from 'immutability-helper';
 
@@ -15,6 +15,8 @@ function Typed(target) {
 @Typed
 export class Noop implements Action {
   public update(state: Game): ActionResult {
+    // Ugly type hack in order to workaround typescript types
+    console.log("Noop: " + (<any>this)['type'].name);
     return { state };
   }
 }
@@ -57,7 +59,6 @@ export class MouseEntersCard implements Action {
 
     const newActions =
       actions.pipe(
-        //tap((x) => console.log(x)),
         takeWhile((a) => a.type !== MouseExistsCard),
         filter((a) => a.type === MouseClick),
         map((a) => new Log("OK!: " + this.cardId))
@@ -88,8 +89,44 @@ export class MouseGroundIntersects extends Noop {
   constructor(public point: THREE.Vector3) {
     super();
   }
+  public update(state: Game): ActionResult {
+    const { x, y, z} = this.point;
+
+    return { state: update(state, {
+      mouse: mouse => update(mouse || {}, {
+        ground: ground => update(ground || {}, {
+          $set: { x, y, z }
+        })
+      })})};
+  }
 }
 
 @Typed
 export class MouseClick extends Noop {
+}
+
+@Typed
+export class FlipSelectedObject implements Action {
+
+  public update(oldState: Game): ActionResult {
+    let state = oldState;
+
+    const selected: any = Object
+      .entries(state.objects)
+      .find(([id, value]) => (<any>value).selected);
+
+    if (selected) {
+      const op = {
+        objects: {
+          [selected[0]]: {
+            $toggle: ['flip']
+          }
+        }
+      };
+
+      state = update(state, op)
+    }
+
+    return { state };
+  }
 }

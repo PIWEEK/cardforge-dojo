@@ -12,6 +12,7 @@
     "@tweenjs/tween.js": "^17.2.0",
     "deep-diff": "^1.0.1",
     "immutability-helper": "^2.7.1",
+    "mousetrap": "^1.6.2",
     "rxjs": "^6.2.2",
     "rxjs-compat": "^6.2.2",
     "three": "^0.94.0",

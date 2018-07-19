@@ -1,17 +1,7 @@
-import { Subject, Observable } from 'rxjs';
-
+import { scan } from 'rxjs/operators';
 import Game from 'data/Game';
-
-export const events = new Subject<Action>();
-
-export type ActionResult = { state: Game, actions?: Observable<Action> }
-export interface Action {
-  type?: Function;
-  update?(state: Game, actions: Observable<Action>): ActionResult;
-}
-
-type ActionResolver = () => Action;
-type ActionOrResolver = Action | ActionResolver
+import { Action, ActionOrResolver } from './Action';
+import { events, initializeEventStream } from './events';
 
 export function dispatch(action: ActionOrResolver): void {
   let instance: Action;
@@ -22,3 +12,7 @@ export function dispatch(action: ActionOrResolver): void {
   }
   events.next(instance);
 }
+
+export { initializeEventStream };
+
+export default dispatch;

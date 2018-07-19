@@ -1,9 +1,72 @@
+@import url(https://fonts.googleapis.com/css?family=Oswald);
+
 * {
   box-sizing: border-box;
+  font-family: 'Oswald';
+  list-style: none;
   margin: 0;
   padding: 0;
 }
 
 html {
   overflow: hidden;
+}
+
+.options {
+  background-color: black;
+  color: white;
+  font-size: 1.5em;
+  height: 315px;
+  position: relative;
+
+  & > * {
+    padding: 1rem 0.5rem;
+    margin: 0.5rem;
+    max-width: 20rem;
+    cursor: pointer;
+    position: absolute;
+    top: 35%;
+    padding-left: 11rem;
+    transform-origin: left;
+    margin-left: -8rem;
+    transition: all 0.3s;
+  }
+
+  & .past2 {
+    transform: rotateZ(-30deg);
+    filter: blur(1.4px);
+    opacity: 0.4;
+  }
+
+  & .past1 {
+    transform: rotateZ(-15deg);
+    opacity: 0.5;
+  }
+
+  & .current {
+    transform: rotateZ(0deg);
+    font-size: 2rem;
+  }
+
+  & .future1 {
+    transform: rotateZ(15deg);
+    opacity: 0.5;
+  }
+
+  & .future2 {
+    transform: rotateZ(30deg);
+    filter: blur(1.4px);
+    opacity: 0.4;
+  }
+
+  & .outUp {
+    transform: rotateZ(-45deg);
+    opacity: 0;
+  }
+
+  & .outBottom {
+    transform: rotateZ(45deg);
+    opacity: 0;
+  }
+
 }

@@ -1,8 +1,5 @@
+import { times } from 'utils';
 import { CardData } from 'data/Collection';
-
-function times(num) {
-  return [...Array(num).keys()];
-}
 
 export function createCollection(
   suitId: string,

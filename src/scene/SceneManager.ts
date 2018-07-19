@@ -106,7 +106,7 @@ export default class SceneManager {
       });
 
     gameDiff
-      .filter(({ kind }) => kind === 'E')
+      .filter(({ kind, path }) => kind === 'E' || (kind === 'N' && path.length > 1))
       .forEach(({ path: [objectId, field], rhs: data }) => {
         const objState = game.objects[objectId];
         const objRenderer = this.objectRenderers.get(objectId);
