@@ -1,5 +1,5 @@
-import { Observable, interval } from 'rxjs';
-import { map, takeWhile, filter, tap, flatMap } from 'rxjs/operators';
+import { Observable, interval, of, merge } from 'rxjs';
+import { map, takeWhile, filter, tap, flatMap, endWith } from 'rxjs/operators';
 
 import Game from 'data/Game';
 import { Action, ActionResult } from './Action';
@@ -59,12 +59,14 @@ export class MouseEntersCard implements Action {
       actions.pipe(
         takeWhile((a) => a.type !== MouseExistsCard),
         filter((a) => a.type === MouseDown),
-        flatMap((a) => actions.pipe(
-          takeWhile((a) => a.type !== MouseUp),
-          filter((a) => a.type === MouseGroundIntersects),
-          map((a: MouseGroundIntersects) => new MoveCard(this.cardId, a.point))
-        ))
-      )
+        flatMap((a) => merge(
+          of(new StartDragging(this.cardId)),
+          actions.pipe(
+            takeWhile((a) => a.type !== MouseUp),
+            filter((a) => a.type === MouseGroundIntersects),
+            map((a: MouseGroundIntersects) => new MoveCard(this.cardId, a.point)),
+            endWith(new EndDragging(this.cardId))
+          ))))
     return { state: newState, actions: newActions};
   }
 }
@@ -104,13 +106,52 @@ export class MouseGroundIntersects extends Noop {
 }
 
 @Typed
-export class MouseDown extends Noop {
+export class MouseDown implements Action {
+  public update(state: Game): ActionResult {
+    return { state };
+  }
 }
 
 @Typed
-export class MouseUp extends Noop {
+export class MouseUp implements Action {
+  public update(state: Game): ActionResult {
+    return { state };
+  }
 }
 
+@Typed
+export class StartDragging implements Action {
+  constructor(public cardId: string) {}
+
+  public update(state: Game): ActionResult {
+    const newState = update(state, {
+      objects: {
+        [this.cardId]: {
+          dragging: {
+            $set: true
+          }
+        }
+      }});
+    return { state: newState };
+  }
+}
+
+@Typed
+export class EndDragging implements Action {
+  constructor(public cardId: string) {}
+
+  public update(state: Game): ActionResult {
+    const newState = update(state, {
+      objects: {
+        [this.cardId]: {
+          dragging: {
+            $set: false
+          }
+        }
+      }});
+    return { state: newState };
+  }
+}
 @Typed
 export class FlipSelectedObject implements Action {
 
@@ -152,7 +193,7 @@ export class MoveCard implements Action {
             $set: {
               type: 'absolute',
               x: this.point.x,
-              y: this.point.y + 0.2,
+              y: this.point.y,
               z: this.point.z
             }
           }

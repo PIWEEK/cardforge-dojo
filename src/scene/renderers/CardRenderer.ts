@@ -13,6 +13,8 @@ import { resolveCollection, resolveCard, cardMeasures } from 'data/Collection';
 import { buildCardObject } from 'scene/builders/CardObjectBuilder';
 import { buildSelectionBox } from 'scene/builders/SelectionObjectBuilder';
 
+const STEP_SPEED = 300;
+
 export default class CardRenderer implements ObjectRenderer {
   private context: Context;
   private object3d: THREE.Object3D;
@@ -31,7 +33,6 @@ export default class CardRenderer implements ObjectRenderer {
   }
 
   public init(context: Context): void {
-    console.log('init');
     this.context = context;
 
     const {collectionRef, cardRef, position} = this.state;
@@ -91,16 +92,13 @@ export default class CardRenderer implements ObjectRenderer {
   }
 
   public dispose(): void {
-    console.log("disposing");
     this.context.scene.remove(this.object3d);
     this.context.scene.remove(this.collisionBox);
   }
 
   public change(data, field: string): void {
-    console.log(field);
     if (field === 'position' && data.position.type === 'absolute') {
       this.object3d.position.x = data.position.x;
-      this.object3d.position.y = data.position.y;
       this.object3d.position.z = data.position.z;
     }
 
@@ -108,26 +106,35 @@ export default class CardRenderer implements ObjectRenderer {
       this.isSelected = data.selected;
       this.collisionBox.visible = data.selected && !this.disableSelection;
     }
+
+    if (field === 'dragging') {
+      if (data.dragging) {
+        this.animateUp();
+      } else {
+        this.animateDown();
+      }
+      this.disableSelection = data.dragging;
+    }
+
     if (field === 'flip') {
       if (data.flip) {
-        this.animateFlip(Math.PI);
+        this.animateFlip(Math.PI, data.dragging);
       } else {
-        this.animateFlip(0);
+        this.animateFlip(0, data.dragging);
       }
     }
   }
 
-  private animateFlip(targetAngle: number) {
-    const stepSpeed = 300;
+  private animateFlip(targetAngle: number, dragging: boolean) {
     const rotate = new TWEEN.Tween(this.object3d.rotation).to({
       y: targetAngle
-    }, stepSpeed);
+    }, STEP_SPEED);
     const goUp = new TWEEN.Tween(this.object3d.position).to({
       y: this.cardBaseline + 0.25
-    }, stepSpeed);
+    }, STEP_SPEED);
     const goDown = new TWEEN.Tween(this.object3d.position).to({
       y: this.cardBaseline
-    }, stepSpeed);
+    }, STEP_SPEED);
 
     rotate.start();
     goUp.onStart(() => {
@@ -138,7 +145,24 @@ export default class CardRenderer implements ObjectRenderer {
       this.collisionBox.visible = this.isSelected;
       this.disableSelection = false;
     })
-    goUp.chain(goDown).start()
+
+    if (dragging) {
+      rotate.start();
+    } else {
+      goUp.chain(goDown).start()
+    }
+  }
+
+  private animateUp() {
+    new TWEEN.Tween(this.object3d.position).to({
+      y: this.cardBaseline + 0.25
+    }, STEP_SPEED).start();
+  }
+
+  private animateDown() {
+    new TWEEN.Tween(this.object3d.position).to({
+      y: this.cardBaseline
+    }, STEP_SPEED).start();
   }
 
 }

@@ -115,7 +115,6 @@ export default class SceneManager {
       .filter(({ kind }) => kind === 'D')
       .filter(({ path }) => path.length === 1)
       .forEach(({ path: [objectId]}) => {
-        console.log("Deleting ", objectId);
         const objRenderer = this.objectRenderers.get(objectId);
         this.objectRenderers.delete(objectId);
         objRenderer && objRenderer.dispose();
