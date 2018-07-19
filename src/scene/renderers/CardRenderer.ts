@@ -85,9 +85,9 @@ export default class CardRenderer implements ObjectRenderer {
     const isMouseInside = intersects.length > 0;
 
     if (!this.dragging) {
-      if (isMouseInside && !this.mouseInside) {
+      if (isMouseInside && !this.mouseInside && !(<any>this.context.game).dragging) {
         dispatch(new MouseEntersCard(this.id));
-      } else if (!isMouseInside && this.mouseInside) {
+      } else if (!isMouseInside && this.mouseInside && !(<any>this.context.game).dragging) {
         dispatch(new MouseExistsCard(this.id));
       }
       this.mouseInside = isMouseInside;

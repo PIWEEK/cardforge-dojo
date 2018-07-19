@@ -42,6 +42,10 @@ export class InitializeState implements Action {
   }
 }
 
+function pass(state: Game): ActionResult {
+  return { state };
+}
+
 @Typed
 export class MouseEntersCard implements Action {
   constructor(public cardId: string) {}
@@ -125,6 +129,9 @@ export class StartDragging implements Action {
   public update(state: Game): ActionResult {
     dom.changeCursor('dragging');
     const newState = update(state, {
+      dragging: {
+        $set: true
+      },
       objects: {
         [this.cardId]: {
           dragging: {
@@ -143,6 +150,9 @@ export class EndDragging implements Action {
   public update(state: Game): ActionResult {
     dom.clearCursor();
     const newState = update(state, {
+      dragging: {
+        $set: false
+      },
       objects: {
         [this.cardId]: {
           dragging: {
