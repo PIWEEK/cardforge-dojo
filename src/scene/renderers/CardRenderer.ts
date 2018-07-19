@@ -31,6 +31,7 @@ export default class CardRenderer implements ObjectRenderer {
   }
 
   public init(context: Context): void {
+    console.log('init');
     this.context = context;
 
     const {collectionRef, cardRef, position} = this.state;
@@ -90,11 +91,19 @@ export default class CardRenderer implements ObjectRenderer {
   }
 
   public dispose(): void {
+    console.log("disposing");
     this.context.scene.remove(this.object3d);
     this.context.scene.remove(this.collisionBox);
   }
 
   public change(data, field: string): void {
+    console.log(field);
+    if (field === 'position' && data.position.type === 'absolute') {
+      this.object3d.position.x = data.position.x;
+      this.object3d.position.y = data.position.y;
+      this.object3d.position.z = data.position.z;
+    }
+
     if (field === 'selected') {
       this.isSelected = data.selected;
       this.collisionBox.visible = data.selected && !this.disableSelection;

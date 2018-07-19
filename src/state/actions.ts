@@ -1,5 +1,5 @@
 import { Observable, interval } from 'rxjs';
-import { map, takeWhile, filter, tap } from 'rxjs/operators';
+import { map, takeWhile, filter, tap, flatMap } from 'rxjs/operators';
 
 import Game from 'data/Game';
 import { Action, ActionResult } from './Action';
@@ -58,8 +58,12 @@ export class MouseEntersCard implements Action {
     const newActions =
       actions.pipe(
         takeWhile((a) => a.type !== MouseExistsCard),
-        filter((a) => a.type === MouseClick),
-        map((a) => new Log("OK!: " + this.cardId))
+        filter((a) => a.type === MouseDown),
+        flatMap((a) => actions.pipe(
+          takeWhile((a) => a.type !== MouseUp),
+          filter((a) => a.type === MouseGroundIntersects),
+          map((a: MouseGroundIntersects) => new MoveCard(this.cardId, a.point))
+        ))
       )
     return { state: newState, actions: newActions};
   }
@@ -100,7 +104,11 @@ export class MouseGroundIntersects extends Noop {
 }
 
 @Typed
-export class MouseClick extends Noop {
+export class MouseDown extends Noop {
+}
+
+@Typed
+export class MouseUp extends Noop {
 }
 
 @Typed
@@ -126,5 +134,31 @@ export class FlipSelectedObject implements Action {
     }
 
     return { state };
+  }
+}
+
+@Typed
+export class MoveCard implements Action {
+  constructor(
+    public cardId,
+    public point: THREE.Vector3
+  ) {}
+
+  public update(old: Game): ActionResult {
+    const op = {
+      objects: {
+        [ this.cardId ]: {
+          position: {
+            $set: {
+              type: 'absolute',
+              x: this.point.x,
+              y: this.point.y + 0.2,
+              z: this.point.z
+            }
+          }
+        }
+      }
+    }
+    return { state: update(old, op) };
   }
 }

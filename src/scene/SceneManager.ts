@@ -6,7 +6,7 @@ import diff from 'deep-diff';
 import TWEEN from '@tweenjs/tween.js';
 
 import { dispatch } from 'state';
-import { MouseClick } from 'state/actions';
+import { MouseDown, MouseUp } from 'state/actions';
 
 import Deck from 'data/Deck';
 import Collection from 'data/Collection';
@@ -52,8 +52,12 @@ export default class SceneManager {
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
 
-    canvas.onclick = (event) => {
-      dispatch(new MouseClick());
+    canvas.onmousedown = (event) => {
+      dispatch(new MouseDown());
+    }
+
+    canvas.onmouseup = (event) => {
+      dispatch(new MouseUp());
     }
   }
 
@@ -108,19 +112,21 @@ export default class SceneManager {
       });
 
     gameDiff
+      .filter(({ kind }) => kind === 'D')
+      .filter(({ path }) => path.length === 1)
+      .forEach(({ path: [objectId]}) => {
+        console.log("Deleting ", objectId);
+        const objRenderer = this.objectRenderers.get(objectId);
+        this.objectRenderers.delete(objectId);
+        objRenderer && objRenderer.dispose();
+      });
+
+    gameDiff
       .filter(({ kind, path }) => kind === 'E' || (kind === 'N' && path.length > 1))
       .forEach(({ path: [objectId, field], rhs: data }) => {
         const objState = game.objects[objectId];
         const objRenderer = this.objectRenderers.get(objectId);
         objRenderer && objRenderer.change && objRenderer.change(objState, field);
-      });
-
-    gameDiff
-      .filter(({ kind }) => kind === 'D')
-      .forEach(({ path: [objectId]}) => {
-        const objRenderer = this.objectRenderers.get(objectId);
-        this.objectRenderers.delete(objectId);
-        objRenderer && objRenderer.dispose();
       });
 
   }
