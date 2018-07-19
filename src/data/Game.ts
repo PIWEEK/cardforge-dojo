@@ -54,14 +54,15 @@ export interface BoardData {
 export interface DeckData {
   type: 'deck';
   deckRef: string;
-  position: Position
+  position: Position,
+  cards?: CardData[]
 }
 
 export interface CardData {
   type: 'card';
   collectionRef: string;
   cardRef: string;
-  position: Position
+  position?: Position
 }
 
 export function resolvePosition(game: Game, position: Position): Vector3 {

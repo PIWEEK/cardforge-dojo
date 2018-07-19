@@ -49,7 +49,7 @@ export default class CardRenderer implements ObjectRenderer {
 
     // Make the deck parallel to the Z plane
     mesh.rotation.x = -Math.PI / 2;
-    //mesh.rotation.y = Math.PI;
+    mesh.rotation.y = Math.PI;
 
     // Enable shadows
     mesh.castShadow = true;
@@ -125,9 +125,9 @@ export default class CardRenderer implements ObjectRenderer {
 
     if (field === 'flip') {
       if (data.flip) {
-        this.animateFlip(Math.PI, data.dragging);
-      } else {
         this.animateFlip(0, data.dragging);
+      } else {
+        this.animateFlip(Math.PI, data.dragging);
       }
     }
   }

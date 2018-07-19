@@ -278,15 +278,22 @@ export class PopupCard implements Action {
   constructor(public deckId: string,
               public point: THREE.Vector3) {}
 
-  public mutations(cardId: string): object {
+  public mutations(state, cardId: string): object {
+    const cards = state.objects[this.deckId].cards;
+    const lastIdx = cards.length - 1;
+    const cardData = cards[lastIdx];
+
     return {
       objects: {
+        [this.deckId]: {
+          cards: {
+            $splice: [[lastIdx, 1]]
+          }
+        },
         [cardId]: {
           $set: {
+            ...cardData,
             selected: true,
-            type: 'card',
-            collectionRef: 'spanish-deck-collection',
-            cardRef: 'coins-1',
             position: {
               type: 'absolute',
               x: this.point.x,
@@ -304,7 +311,7 @@ export class PopupCard implements Action {
 
   public update(state: Game, actions: Observable<Action>): ActionResult {
     const cardId = `card-${uuid()}`;
-    const newState = update(state, this.mutations(cardId));
+    const newState = update(state, this.mutations(state, cardId));
     const newActions = this.deriveActions(cardId);
     return { state: newState, actions: newActions };
   }

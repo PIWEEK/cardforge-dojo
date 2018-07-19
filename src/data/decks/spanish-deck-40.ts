@@ -13,8 +13,8 @@ const deck: Deck = {
     ...generate(3, 9, 'cups'),
     ...generate(7, 0, 'swords'),
     ...generate(3, 9, 'swords'),
-    ...generate(7, 0, 'cubs'),
-    ...generate(3, 9, 'cubs'),
+    ...generate(7, 0, 'clubs'),
+    ...generate(3, 9, 'clubs'),
   ]
 };
 

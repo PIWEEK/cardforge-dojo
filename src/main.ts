@@ -5,7 +5,7 @@ import SceneBuilder from 'scene';
 import collections from 'data/collections';
 import decks from 'data/decks';
 
-import { defaultGame } from 'data/games';
+import createGame from 'data/games';
 import { initializeEventStream, dispatch } from './state';
 import { InitializeState } from './state/actions';
 
@@ -26,7 +26,8 @@ function start() {
   initializeEventStream(scene.update.bind(scene));
 
   // Dispatch the initialization
-  dispatch(new InitializeState(defaultGame));
+  const state = createGame(window.location.hash || 'default', collections, decks)
+  dispatch(new InitializeState(state));
 
   // Test
   //console.log(MenuBuilder.buildMenu(times(10).map((x) => `option${x}`)));
