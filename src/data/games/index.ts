@@ -7,7 +7,13 @@ import test from './game-test';
 import solitaire from './game-solitaire';
 
 function createGame(gameTemplate: string, collections: Collection[], decks: Deck[]): Game {
-  return solitaire(collections, decks);
+  if (gameTemplate === 'solitaire') {
+    return solitaire(collections, decks);
+  }
+  if (gameTemplate === 'test') {
+    return test(collections, decks)
+  }
+  return test(collections, decks);
 }
 
 export default createGame;

@@ -14,6 +14,7 @@ import { buildCardObject } from 'scene/builders/CardObjectBuilder';
 import { buildSelectionBox } from 'scene/builders/SelectionObjectBuilder';
 
 const STEP_SPEED = 300;
+const ORDER_CONST = 0.0001;
 
 export default class CardRenderer implements ObjectRenderer {
   private context: Context;
@@ -57,8 +58,8 @@ export default class CardRenderer implements ObjectRenderer {
 
     // Change position
     //mesh.position.x = (-2.5 / 2.0) + width * 2;
-    this.cardBaseline = (depth / 2) + 0.02
-    mesh.position.y = this.cardBaseline;
+    this.cardBaseline = (depth / 2) + 0.02 + (<any>this.state).order * ORDER_CONST;
+    mesh.position.y = this.cardBaseline + (<any>this.state).dragging ? 0.25 : 0;
 
     // Add to scene
     context.scene.add(this.object3d = mesh);
@@ -72,8 +73,9 @@ export default class CardRenderer implements ObjectRenderer {
       this.context.game,
       position
     );
+    posVec.y = this.cardBaseline;
     mesh.position.copy(posVec.add(new THREE.Vector3(
-      width / 2, depth / 2, height / 2)));
+      width / 2, 0, height / 2)));
   }
 
   public render(): void {
@@ -129,6 +131,14 @@ export default class CardRenderer implements ObjectRenderer {
       } else {
         this.animateFlip(Math.PI, data.dragging);
       }
+    }
+
+    if (field === 'order') {
+      const {collectionRef, cardRef} = data;
+      const collection = resolveCollection(this.context.collections, collectionRef);
+      const card = resolveCard(collection, cardRef);
+      const { width, height, depth, radius } = cardMeasures(collection);
+      this.cardBaseline = (depth / 2) + 0.02 + (<any>data).order * ORDER_CONST;
     }
   }
 

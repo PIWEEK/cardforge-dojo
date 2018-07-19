@@ -53,11 +53,11 @@ export default class SceneManager {
     };
 
     canvas.onmousedown = (event) => {
-      dispatch(new MouseDown());
+      dispatch(new MouseDown(event.button));
     }
 
     canvas.onmouseup = (event) => {
-      dispatch(new MouseUp());
+      dispatch(new MouseUp(event.button));
     }
   }
 

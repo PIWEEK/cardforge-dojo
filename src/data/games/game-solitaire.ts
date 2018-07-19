@@ -6,6 +6,8 @@ import { randomDeck } from './utils';
 
 const boardId: string = `board-${uuid()}`;
 
+let order = 0;
+
 export const game = (collections: Collection[], decks: Deck[]) => {
   const deck = randomDeck(collections, decks, 'poker-deck');
 
@@ -14,18 +16,19 @@ export const game = (collections: Collection[], decks: Deck[]) => {
   let offsetX = 0.0;
   let offsetY = 0.0;
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 6; i >= 0; i--) {
     for (let j = 0; j < i+1; j++) {
       const curCard = deck.pop();
       cards[`card-${uuid()}`] = {
         ...curCard,
         flip: j == i,
+        order: order++,
         position: {
           type: 'relative',
           ref: boardId,
           offsetX: 2.0 - offsetX,
-          offsetY: 0.001 * (7 - i + 1),
-          offsetZ: 1.0 - offsetY
+          offsetY: (order++) * 0.00001,
+          offsetZ: 0.2 + offsetY
         }
       };
       offsetX += 0.25;
@@ -36,6 +39,7 @@ export const game = (collections: Collection[], decks: Deck[]) => {
 
 
   return {
+    order,
     objects: {
       "ground": {
         type: 'ground',
@@ -60,7 +64,7 @@ export const game = (collections: Collection[], decks: Deck[]) => {
           offsetY: 0,
           offsetZ: 0.4
         },
-        cards: randomDeck(collections, decks, 'poker-deck')
+        cards: deck
 
       } as DeckData,
       ...cards

@@ -26,7 +26,9 @@ function start() {
   initializeEventStream(scene.update.bind(scene));
 
   // Dispatch the initialization
-  const state = createGame(window.location.hash || 'default', collections, decks)
+  const query = window.location.search;
+  const game = query.substring(query.indexOf('=') + 1);
+  const state = createGame(game, collections, decks)
   dispatch(new InitializeState(state));
 
   // Test

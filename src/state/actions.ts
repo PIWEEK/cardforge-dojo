@@ -56,13 +56,13 @@ export class MouseEntersCard extends BaseAction {
   public deriveActions(actions: Observable<Action>) {
     return actions.pipe(
       takeWhile((a) => a.type !== MouseExistsCard),
-      filter((a) => a.type === MouseDown),
+      filter((a) => a.type === MouseDown && (<MouseDown>a).button === 0),
       flatMap((a) => merge(
         of(new StartDragging(this.cardId)).pipe(
           observeOn(asyncScheduler)
         ),
         actions.pipe(
-          takeWhile((a) => a.type !== MouseUp),
+          takeWhile((a) => a.type !== MouseUp || (<MouseUp>a).button !== 0),
           filter((a) => a.type === MouseGroundIntersects),
           map((a: MouseGroundIntersects) => new MoveCard(this.cardId, a.point)),
           endWith(new EndDragging(this.cardId))
@@ -112,10 +112,16 @@ export class MouseGroundIntersects extends BaseAction {
 
 @Typed
 export class MouseDown extends BaseAction {
+  constructor(public button: number) {
+    super();
+  }
 }
 
 @Typed
 export class MouseUp extends BaseAction {
+  constructor(public button: number) {
+    super();
+  }
 }
 
 @Typed
@@ -150,11 +156,14 @@ export class EndDragging extends BaseAction {
     dom.clearCursor();
   }
 
-  public mutations() {
+  public mutations(state) {
+    const order = state.order + 1;
     return {
+      order: { $set: order },
       dragging: { $set: false },
       objects: {
         [this.cardId]: {
+          order: { $set: order },
           selected: { $set: false },
           dragging: { $set: false }
         }
@@ -172,9 +181,12 @@ export class FlipSelectedObject extends BaseAction {
       .find(([id, value]) => (<any>value).selected);
 
     if (selected) {
+      const order = (<any>state).order + 1;
       return {
+        order: { $set: order },
         objects: {
           [selected[0]]: {
+            order: { $set: order },
             $toggle: ['flip']
           }
         }
@@ -228,7 +240,7 @@ export class MouseEntersDeck extends BaseAction {
   public deriveActions(actions: Observable<Action>): Observable<Action> {
     return actions.pipe(
       takeWhile((a) => a.type !== MouseExitsDeck),
-      filter((a) => a.type === MouseDown),
+      filter((a) => a.type === MouseDown && (<MouseDown>a).button === 0),
       flatMap(
         () => actions.pipe(
           filter((a) => a.type === MouseGroundIntersects),
@@ -243,7 +255,7 @@ export class MouseEntersDeck extends BaseAction {
               flatMap((cardCreated: CardCreated) => merge(
                 of(new StartDragging(cardCreated.cardId)),
                 actions.pipe(
-                  takeWhile((a) => a.type !== MouseUp),
+                  takeWhile((a) => a.type !== MouseUp || (<MouseUp>a).button !== 0),
                   filter((a) => a.type === MouseGroundIntersects),
                   map((a: MouseGroundIntersects) => new MoveCard(cardCreated.cardId, a.point)),
                   endWith(new EndDragging(cardCreated.cardId))
@@ -282,8 +294,10 @@ export class PopupCard implements Action {
     const cards = state.objects[this.deckId].cards;
     const lastIdx = cards.length - 1;
     const cardData = cards[lastIdx];
+    const order = state.order + 1;
 
     return {
+      order: { $set: order },
       objects: {
         [this.deckId]: {
           cards: {
@@ -294,6 +308,7 @@ export class PopupCard implements Action {
           $set: {
             ...cardData,
             selected: true,
+            order,
             position: {
               type: 'absolute',
               x: this.point.x,

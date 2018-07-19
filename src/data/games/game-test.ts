@@ -6,6 +6,8 @@ import { randomDeck } from './utils';
 
 const boardId: string = `board-${uuid()}`;
 
+let order: number = 0;
+
 export const game = (collections: Collection[], decks: Deck[]) => ({
   objects: {
     "ground": {
@@ -51,6 +53,7 @@ export const game = (collections: Collection[], decks: Deck[]) => ({
       collectionRef: 'spanish-deck-collection',
       cardRef: 'coins-1',
       flip: true,
+      order: order++,
       position: {
         type: 'relative',
         ref: boardId,
@@ -64,6 +67,7 @@ export const game = (collections: Collection[], decks: Deck[]) => ({
       collectionRef: 'english-deck-collection',
       cardRef: 'hearts-10',
       flip: false,
+      order: order++,
       position: {
         type: 'relative',
         ref: boardId,
@@ -72,7 +76,8 @@ export const game = (collections: Collection[], decks: Deck[]) => ({
         offsetZ: 0.8
       }
     } as CardData,
-  }
+  },
+  order
 });
 
 export default game;
