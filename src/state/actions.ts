@@ -1,10 +1,11 @@
+import update from 'immutability-helper';
 import { Observable, interval, of, merge } from 'rxjs';
 import { map, takeWhile, filter, tap, flatMap, endWith } from 'rxjs/operators';
 
+import * as dom from 'utils/dom';
 import Game from 'data/Game';
 import { Action, ActionResult } from './Action';
 
-import update from 'immutability-helper';
 
 function Typed(target) {
   target.prototype.type = target;
@@ -46,13 +47,10 @@ export class MouseEntersCard implements Action {
   constructor(public cardId: string) {}
 
   public update(state: Game, actions: Observable<Action>): ActionResult {
+    dom.changeCursor('hover');
     const newState = update(state, {
       objects: {
-        [this.cardId]: {
-          selected: {
-            $set: true
-          }
-        }
+        [this.cardId]: { selected: { $set: true}}
       }});
 
     const newActions =
@@ -76,6 +74,7 @@ export class MouseExistsCard implements Action {
   constructor(public cardId: string) {}
 
   public update(state: Game): ActionResult {
+    dom.clearCursor();
     const newState = update(state, {
       objects: {
         [this.cardId]: {
@@ -124,6 +123,7 @@ export class StartDragging implements Action {
   constructor(public cardId: string) {}
 
   public update(state: Game): ActionResult {
+    dom.changeCursor('dragging');
     const newState = update(state, {
       objects: {
         [this.cardId]: {
@@ -141,6 +141,7 @@ export class EndDragging implements Action {
   constructor(public cardId: string) {}
 
   public update(state: Game): ActionResult {
+    dom.clearCursor();
     const newState = update(state, {
       objects: {
         [this.cardId]: {

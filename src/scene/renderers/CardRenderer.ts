@@ -23,6 +23,7 @@ export default class CardRenderer implements ObjectRenderer {
   private isSelected: boolean = false;
   private mouseInside: boolean = false;
   private disableSelection: boolean = false;
+  private dragging: boolean = false;
   private cardBaseline: number;
 
   constructor(private id: string) {
@@ -83,12 +84,16 @@ export default class CardRenderer implements ObjectRenderer {
 
     const isMouseInside = intersects.length > 0;
 
-    if (isMouseInside && !this.mouseInside) {
-      dispatch(new MouseEntersCard(this.id));
-    } else if (!isMouseInside && this.mouseInside) {
-      dispatch(new MouseExistsCard(this.id));
+    if (!this.dragging) {
+      if (isMouseInside && !this.mouseInside) {
+        dispatch(new MouseEntersCard(this.id));
+      } else if (!isMouseInside && this.mouseInside) {
+        dispatch(new MouseExistsCard(this.id));
+      }
+      this.mouseInside = isMouseInside;
+    } else {
+      this.collisionBox.visible = false;
     }
-    this.mouseInside = isMouseInside;
   }
 
   public dispose(): void {
@@ -109,8 +114,10 @@ export default class CardRenderer implements ObjectRenderer {
 
     if (field === 'dragging') {
       if (data.dragging) {
+        this.dragging = true;
         this.animateUp();
       } else {
+        this.dragging = false;
         this.animateDown();
       }
       this.disableSelection = data.dragging;
