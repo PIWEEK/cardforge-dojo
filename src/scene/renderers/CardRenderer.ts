@@ -15,11 +15,12 @@ import { buildSelectionBox } from 'scene/builders/SelectionObjectBuilder';
 
 const STEP_SPEED = 300;
 const ORDER_CONST = 0.0001;
+const DRAG_HEIGHT = 0.15;
 
 export default class CardRenderer implements ObjectRenderer {
   private context: Context;
   private object3d: THREE.Object3D;
-  private collisionBox: THREE.Object3D;
+  private collisionBox: THREE.Mesh;
 
   private isSelected: boolean = false;
   private mouseInside: boolean = false;
@@ -59,15 +60,16 @@ export default class CardRenderer implements ObjectRenderer {
     // Change position
     //mesh.position.x = (-2.5 / 2.0) + width * 2;
     this.cardBaseline = (depth / 2) + 0.02 + (<any>this.state).order * ORDER_CONST;
-    mesh.position.y = this.cardBaseline + (<any>this.state).dragging ? 0.25 : 0;
+    mesh.position.y = this.cardBaseline + (<any>this.state).dragging ? DRAG_HEIGHT : 0;
 
     // Add to scene
     context.scene.add(this.object3d = mesh);
 
     // Box that will be displayed on hover
     const collisionBox = buildSelectionBox(width, height, depth, mesh);
-    collisionBox.visible = false;
+    (<THREE.Material>collisionBox.material).visible = false;
     context.scene.add(this.collisionBox = collisionBox);
+    context.collisionBoxes.push(collisionBox);
 
     const posVec = resolvePosition(
       this.context.game,
@@ -79,27 +81,27 @@ export default class CardRenderer implements ObjectRenderer {
   }
 
   public render(): void {
-    const intersects = [];
     this.collisionBox.position.copy(this.object3d.position);
     this.collisionBox.rotation.copy(this.object3d.rotation);
-    this.collisionBox.raycast(this.context.mouseRay, intersects);
-
-    const isMouseInside = intersects.length > 0;
+    const intersects = this.context.mouseRay.intersectObjects(this.context.collisionBoxes);
+    const isMouseInside = intersects.length > 0 &&
+      intersects[0]['object'] === this.collisionBox;
 
     if (!this.dragging) {
       if (isMouseInside && !this.mouseInside && !(<any>this.context.game).dragging) {
-        dispatch(new MouseEntersCard(this.id));
+        setTimeout(() => dispatch(new MouseEntersCard(this.id)), 10);
       } else if (!isMouseInside && this.mouseInside && !(<any>this.context.game).dragging) {
         dispatch(new MouseExistsCard(this.id));
       }
       this.mouseInside = isMouseInside;
     } else {
-      this.collisionBox.visible = false;
+      (<THREE.Material>this.collisionBox.material).visible = false;
     }
   }
 
   public dispose(): void {
     this.context.scene.remove(this.object3d);
+    this.context.collisionBoxes = this.context.collisionBoxes.filter((cb) => cb !== this.collisionBox);
     this.context.scene.remove(this.collisionBox);
   }
 
@@ -111,7 +113,7 @@ export default class CardRenderer implements ObjectRenderer {
 
     if (field === 'selected') {
       this.isSelected = data.selected;
-      this.collisionBox.visible = data.selected && !this.disableSelection;
+      (<THREE.Material>this.collisionBox.material).visible = data.selected && !this.disableSelection;
     }
 
     if (field === 'dragging') {
@@ -147,7 +149,7 @@ export default class CardRenderer implements ObjectRenderer {
       y: targetAngle
     }, STEP_SPEED);
     const goUp = new TWEEN.Tween(this.object3d.position).to({
-      y: this.cardBaseline + 0.25
+      y: this.cardBaseline + DRAG_HEIGHT
     }, STEP_SPEED);
     const goDown = new TWEEN.Tween(this.object3d.position).to({
       y: this.cardBaseline
@@ -155,11 +157,11 @@ export default class CardRenderer implements ObjectRenderer {
 
     rotate.start();
     goUp.onStart(() => {
-      this.collisionBox.visible = false;
+      (<THREE.Material>this.collisionBox.material).visible = false;
       this.disableSelection = true
     });
     goDown.onComplete(() => {
-      this.collisionBox.visible = this.isSelected;
+      (<THREE.Material>this.collisionBox.material).visible = this.isSelected;
       this.disableSelection = false;
     })
 
@@ -172,7 +174,7 @@ export default class CardRenderer implements ObjectRenderer {
 
   private animateUp() {
     new TWEEN.Tween(this.object3d.position).to({
-      y: this.cardBaseline + 0.25
+      y: this.cardBaseline + DRAG_HEIGHT
     }, STEP_SPEED).start();
   }
 

@@ -5,7 +5,7 @@ export function buildSelectionBox(
   height: number,
   depth: number,
   mesh: THREE.Object3D
-): THREE.Object3D {
+): THREE.Mesh {
   const glow = new THREE.Mesh(
     new THREE.BoxGeometry(width * 1.01, height * 1.01, depth * 1.1),
     new THREE.MeshBasicMaterial({

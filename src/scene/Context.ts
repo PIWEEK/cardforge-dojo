@@ -10,6 +10,7 @@ export default interface Context {
   scene?: THREE.Scene;
   mainCamera?: THREE.Camera;
   mouseRay: THREE.Raycaster;
+  collisionBoxes: THREE.Object3D[];
 
   collections?: Collection[];
   decks?: Deck[];

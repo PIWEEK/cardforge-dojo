@@ -55,7 +55,7 @@ export class MouseEntersCard extends BaseAction {
 
   public deriveActions(actions: Observable<Action>) {
     return actions.pipe(
-      takeWhile((a) => a.type !== MouseExistsCard),
+      takeWhile((a) => a.type !== MouseExistsCard || (<MouseExistsCard>a).cardId !== this.cardId),
       filter((a) => a.type === MouseDown && (<MouseDown>a).button === 0),
       flatMap((a) => merge(
         of(new StartDragging(this.cardId)).pipe(
@@ -239,7 +239,7 @@ export class MouseEntersDeck extends BaseAction {
 
   public deriveActions(actions: Observable<Action>): Observable<Action> {
     return actions.pipe(
-      takeWhile((a) => a.type !== MouseExitsDeck),
+      takeWhile((a) => a.type !== MouseExitsDeck || (<MouseExitsDeck>a).deckId !== this.deckId),
       filter((a) => a.type === MouseDown && (<MouseDown>a).button === 0),
       flatMap(
         () => actions.pipe(

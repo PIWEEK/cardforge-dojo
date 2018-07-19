@@ -18,7 +18,7 @@ import ObjectRenderer from './ObjectRenderer';
 export default class SceneManager {
   private context: Context;
   private renderer: THREE.WebGLRenderer;
-  private mouse: THREE.Vector2 = new THREE.Vector2();
+  private mouse: THREE.Vector2;
 
   private rendererRegistry: Map<string, (string?) => ObjectRenderer> = new Map();
   private objectRenderers: Map<string, ObjectRenderer> = new Map();
@@ -28,6 +28,7 @@ export default class SceneManager {
       width: window.innerWidth,
       height: window.innerHeight,
       mouseRay:  new THREE.Raycaster(),
+      collisionBoxes: [],
       game: {
         objects: {}
       }
@@ -48,6 +49,9 @@ export default class SceneManager {
     this.renderer.gammaOutput = true;
 
     canvas.onmousemove = (event) => {
+      if (!this.mouse) {
+         this.mouse = new THREE.Vector2()
+      }
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
@@ -77,7 +81,9 @@ export default class SceneManager {
   }
 
   public renderFrame(time: number): void {
-    this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
+    if (this.mouse) {
+      this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
+    }
     this.objectRenderers.forEach((obj) => obj.render && obj.render(time));
     this.renderer.render(this.context.scene, this.context.mainCamera);
     TWEEN.update(time);
