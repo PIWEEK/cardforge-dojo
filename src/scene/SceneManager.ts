@@ -63,6 +63,13 @@ export default class SceneManager {
     canvas.onmouseup = (event) => {
       dispatch(new MouseUp(event.button));
     }
+
+    window.addEventListener('resize', (event) => {
+      (<any>this.context.mainCamera).aspect = window.innerWidth / window.innerHeight;
+      (<any>this.context.mainCamera).updateProjectionMatrix();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }, false);
+
   }
 
   public registerGlobal(renderer: ObjectRenderer): void {
