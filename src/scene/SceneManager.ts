@@ -68,6 +68,7 @@ export default class SceneManager {
       (<any>this.context.mainCamera).aspect = window.innerWidth / window.innerHeight;
       (<any>this.context.mainCamera).updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.context.mouseRay.setFromCamera(this.mouse, this.context.mainCamera);
     }, false);
 
   }

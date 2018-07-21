@@ -89,7 +89,7 @@ export default class CardRenderer implements ObjectRenderer {
 
     if (!this.dragging) {
       if (isMouseInside && !this.mouseInside && !(<any>this.context.game).dragging) {
-        setTimeout(() => dispatch(new MouseEntersCard(this.id)), 10);
+        dispatch(new MouseEntersCard(this.id));
       } else if (!isMouseInside && this.mouseInside && !(<any>this.context.game).dragging) {
         dispatch(new MouseExistsCard(this.id));
       }

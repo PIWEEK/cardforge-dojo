@@ -27,6 +27,7 @@ module.exports = {
   devServer: {
     hot: true,
     port: port,
+    host: '0.0.0.0',
     stats: {
         colors: true,
         hash: false,
